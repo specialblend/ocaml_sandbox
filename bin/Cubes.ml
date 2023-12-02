@@ -20,8 +20,9 @@ let parse_cube = function
   | [ qty; "blue" ] -> Blue (int qty)
 
 let parse_game =
-  split colon >> nth 1 >> split semicolon
-  >> List.concat_map (split comma >> List.map (split space >> parse_cube))
+  let parse_sets = split colon >> nth 1 >> split semicolon in
+  let parse_set = split comma >> List.map (split space >> parse_cube) in
+  parse_sets >> List.concat_map parse_set
 
 let valid_cube (max_red, max_green, max_blue) = function
   | Red qty -> qty <= max_red
