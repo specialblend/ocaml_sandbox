@@ -1,0 +1,4 @@
+(executable
+ (public_name trebuchet)
+ (name trebuchet)
+ (libraries core str))
