@@ -35,4 +35,4 @@ let () =
   Core.In_channel.read_lines "cubes.txt"
   |> List.mapi (fun id line -> (id + 1, parse_game line))
   |> List.filter (valid_game thresholds)
-  |> List.map fst |> List.fold_left ( + ) 0 |> print_int
+  |> List.map fst |> List.fold_left ( + ) 0 |> print_int |> print_newline
