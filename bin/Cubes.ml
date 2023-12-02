@@ -22,22 +22,21 @@ let parse_game =
   let parse_cubes = split comma >> List.map (split space >> parse_cube) in
   parse_sets >> List.concat_map parse_cubes
 
-let valid_cube (max_red, max_green, max_blue) = function
-  | Red qty -> qty <= max_red
-  | Green qty -> qty <= max_green
-  | Blue qty -> qty <= max_blue
+let valid_cube (r, g, b) = function
+  | Red qty -> qty <= r
+  | Green qty -> qty <= g
+  | Blue qty -> qty <= b
 
 let valid_cubes thresholds = List.for_all (valid_cube thresholds)
 let valid_game thresholds (_, cubes) = valid_cubes thresholds cubes
 
 let max_rgb =
-  let init = (0, 0, 0) in
   List.fold_left
     (fun (r, g, b) -> function
       | Red qty -> (max r qty, g, b)
       | Green qty -> (r, max g qty, b)
       | Blue qty -> (r, g, max b qty))
-    init
+    (0, 0, 0)
 
 let power (_, cubes) =
   let r, g, b = max_rgb cubes in
