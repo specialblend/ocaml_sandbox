@@ -1,23 +1,21 @@
-type cube = Red of int | Green of int | Blue of int [@@deriving show]
-type game = int * cube list [@@deriving show]
-
 open Str
+
+type cube = Red of int | Green of int | Blue of int
+type game = int * cube list
 
 let ( >> ) f g x = g (f x)
 let nth n l = List.nth l n
-let int = int_of_string
-let re = regexp
 let sum = List.fold_left ( + ) 0
 
-let colon = re ":"
-and comma = re ", "
-and semicolon = re ";"
-and space = re " "
+let colon = regexp ":"
+and comma = regexp ", "
+and semicolon = regexp ";"
+and space = regexp " "
 
 let parse_cube = function
-  | [ qty; "red" ] -> Red (int qty)
-  | [ qty; "green" ] -> Green (int qty)
-  | [ qty; "blue" ] -> Blue (int qty)
+  | [ qty; "red" ] -> Red (int_of_string qty)
+  | [ qty; "green" ] -> Green (int_of_string qty)
+  | [ qty; "blue" ] -> Blue (int_of_string qty)
 
 let parse_game =
   let parse_sets = split colon >> nth 1 >> split semicolon in
