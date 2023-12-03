@@ -1,9 +1,6 @@
-type expr =
-  | Int of int * int * int
-  | Sym of string * int * int
+type expr = Int of int * int * int | Sym of string * int * int
 
-let scan_exprs =
-  Regex.find_all (Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)")
+let scan_exprs = Regex.find_all (Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)")
 
 let parse_expr y (expr, x) =
   match int_of_string_opt expr with
@@ -20,5 +17,5 @@ let _ =
   in
   exprs
   |> List.iter (function
-       | Int (e, x, y) -> Printf.printf "%d:%d %d \n" x y e
-       | Sym (e, x, y) -> Printf.printf "%d:%d %s \n" x y e)
+       | Int (e, x, y) -> Printf.printf "%d:%d %d \n" y x e
+       | Sym (e, x, y) -> Printf.printf "%d:%d %s \n" y x e)
