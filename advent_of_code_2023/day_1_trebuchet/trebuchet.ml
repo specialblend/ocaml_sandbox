@@ -1,7 +1,10 @@
 open Str
 
 let r1 = Str.regexp "[0-9]"
-let r2 = Str.regexp "[0-9]\\|one\\|two\\|three\\|four\\|five\\|six\\|seven\\|eight\\|nine"
+
+let r2 =
+  Str.regexp
+    "[0-9]\\|one\\|two\\|three\\|four\\|five\\|six\\|seven\\|eight\\|nine"
 
 let read_word = function
   | "one" -> 1
@@ -25,6 +28,10 @@ let read_line r l =
   in
   (x * 10) + y
 
-let read_with r f = Core.In_channel.read_lines f |> List.map (read_line r) |> List.fold_left ( + ) 0
+let read_with r f =
+  Core.In_channel.read_lines f
+  |> List.map (read_line r)
+  |> List.fold_left ( + ) 0
+
 let () = "trebuchet.txt" |> read_with r1 |> print_int |> print_newline
 let () = "trebuchet.txt" |> read_with r2 |> print_int |> print_newline

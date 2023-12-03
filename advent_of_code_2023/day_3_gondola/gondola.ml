@@ -11,8 +11,7 @@ let parse_expr y (expr, x) =
   | Some e -> Int (e, x, y)
   | None -> Sym (expr, x, y)
 
-let parse_line y str = scan_exprs str |> List.map (parse_expr y)
-let parse_lines = List.mapi parse_line >> List.concat_map (fun l -> l)
+let parse_line y = scan_exprs >> List.map (parse_expr y)
 
 let is_adj (Int (e, x, y)) (Sym (_, x', y')) =
   let l = len e in
@@ -22,28 +21,32 @@ let is_adj (Int (e, x, y)) (Sym (_, x', y')) =
 
 let is_part_num board = function
   | Sym _ -> false
-  | num -> List.exists (function Int _ -> false | sym -> is_adj num sym) board
+  | num ->
+      board
+      |> List.exists (function
+           | Int _ -> false
+           | Sym _ as sym -> is_adj num sym)
 
 let parse_gear board = function
   | Sym ("*", _, _) as sym ->
-      Some
-        (List.filter
-           (function Int _ as num -> is_adj num sym | _ -> false)
-           board)
-  | _ -> None
+      board
+      |> List.filter (function
+           | Int _ as num -> is_adj num sym
+           | Sym _ -> false)
+  | _ -> []
 
 let value = function Int (e, _, _) -> e | _ -> 0
 
-let _ =
-  let board = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
-  board
-  |> List.filter (is_part_num board)
-  |> List.map value |> List.sum |> string_of_int |> print_endline
+let read_board =
+  Core.In_channel.read_lines >> List.mapi parse_line >> List.flatten
 
 let _ =
-  let board = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
+  let board = read_board "gondola.txt" in
   board
-  |> List.filter_map (parse_gear board)
+  |> List.filter (is_part_num board)
+  |> List.map value |> List.sum |> string_of_int |> print_endline;
+  board
+  |> List.map (parse_gear board)
   |> List.filter (List.length >> ( = ) 2)
   |> List.map (List.map value)
   |> List.map List.product |> List.sum |> string_of_int |> print_endline
