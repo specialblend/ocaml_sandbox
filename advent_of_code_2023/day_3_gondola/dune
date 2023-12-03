@@ -3,3 +3,8 @@
  (name gondola)
  (modules gondola)
  (libraries core fun str regex))
+
+(env
+ (dev
+  (flags
+   (:standard -w -8))))

@@ -15,18 +15,20 @@ let parse_expr y (expr, x) =
 let parse_line y str = scan_exprs str |> List.map (parse_expr y)
 let parse_lines = List.mapi parse_line >> List.concat_map (fun l -> l)
 
-let is_part_num exprs =
-  let is_adj (e, x, y) =
-    let len = String.length (string_of_int e) in
-    let is_adj_x = is_between (x - 1, x + len)
-    and is_adj_y = is_between (y - 1, y + 1) in
-    function
-    | Sym (_, x', y') -> is_adj_x x' && is_adj_y y'
-    | _ -> false
-  in
-  function
+let is_adj (Int (e, x, y)) (Sym (_, x', y')) =
+  let len = String.length (string_of_int e) in
+  let is_adj_x = is_between (x - 1, x + len)
+  and is_adj_y = is_between (y - 1, y + 1) in
+  is_adj_x x' && is_adj_y y'
+
+let is_part_num board = function
   | Sym (_, _, _) -> false
-  | Int (e, x, y) -> List.exists (is_adj (e, x, y)) exprs
+  | num ->
+      List.exists
+        (function
+          | Sym (_, _, _) as sym -> is_adj num sym
+          | _ -> false)
+        board
 
 let value = function
   | Int (e, _, _) -> e
