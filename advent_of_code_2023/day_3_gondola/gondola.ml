@@ -30,6 +30,16 @@ let is_part_num board = function
           | _ -> false)
         board
 
+let parse_gear board = function
+  | Sym ("*", _, _) as sym ->
+      Some
+        (List.filter
+           (function
+             | Int (_, _, _) as num -> is_adj num sym
+             | _ -> false)
+           board)
+  | _ -> None
+
 let value = function
   | Int (e, _, _) -> e
   | Sym (_, _, _) -> 0
@@ -39,6 +49,17 @@ let _ =
   board
   |> List.filter (is_part_num board)
   |> List.map value
+  |> List.fold_left ( + ) 0
+  |> string_of_int
+  |> print_endline
+
+let _ =
+  let board = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
+  board
+  |> List.filter_map (parse_gear board)
+  |> List.filter (List.length >> ( = ) 2)
+  |> List.map (List.map value)
+  |> List.map (List.fold_left ( * ) 1)
   |> List.fold_left ( + ) 0
   |> string_of_int
   |> print_endline
