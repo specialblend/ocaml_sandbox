@@ -13,9 +13,10 @@ let parse_expr y (expr, x) =
 let parse_line y s = scan_exprs s |> List.map (parse_expr y)
 let parse_lines = List.mapi parse_line >> List.concat_map (fun l -> l)
 
+let print_expr = function
+  | Int (e, x, y) -> Printf.printf "%d:%d %d \n" y x e
+  | Sym (e, x, y) -> Printf.printf "%d:%d %s \n" y x e
+
 let _ =
   let exprs = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
-  exprs
-  |> List.iter (function
-       | Int (e, x, y) -> Printf.printf "%d:%d %d \n" y x e
-       | Sym (e, x, y) -> Printf.printf "%d:%d %s \n" y x e)
+  exprs |> List.iter print_expr
