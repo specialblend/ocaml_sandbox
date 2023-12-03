@@ -1,0 +1,5 @@
+(executable
+ (public_name gondola)
+ (name gondola)
+ (modules gondola)
+ (libraries core str))
