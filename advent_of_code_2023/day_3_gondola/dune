@@ -2,4 +2,4 @@
  (public_name gondola)
  (name gondola)
  (modules gondola)
- (libraries core str))
+ (libraries core str regex))
