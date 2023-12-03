@@ -2,4 +2,4 @@
  (public_name cubes)
  (name cubes)
  (modules cubes)
- (libraries core str))
+ (libraries core fun str))

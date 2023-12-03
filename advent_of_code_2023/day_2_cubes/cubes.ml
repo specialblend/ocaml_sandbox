@@ -1,9 +1,9 @@
 open Str
+open Fun
 
 type cube = Red of int | Green of int | Blue of int
 type game = int * cube list
 
-let ( >> ) f g x = g (f x)
 let nth n l = List.nth l n
 let sum = List.fold_left ( + ) 0
 
