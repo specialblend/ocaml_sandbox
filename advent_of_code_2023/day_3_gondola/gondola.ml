@@ -1,8 +1,6 @@
 open Fun
 
-type expr =
-  | Int of int * int * int
-  | Sym of string * int * int
+type expr = Int of int * int * int | Sym of string * int * int
 
 let pattern = "\\([0-9]+\\)\\|\\([^\\.]\\)"
 let scan_exprs = pattern |> Str.regexp |> Regex.find_all
@@ -24,35 +22,23 @@ let is_adj (Int (e, x, y)) (Sym (_, x', y')) =
 
 let is_part_num board = function
   | Sym _ -> false
-  | num ->
-      List.exists
-        (function
-          | Int _ -> false
-          | sym -> is_adj num sym)
-        board
+  | num -> List.exists (function Int _ -> false | sym -> is_adj num sym) board
 
 let parse_gear board = function
   | Sym ("*", _, _) as sym ->
       Some
         (List.filter
-           (function
-             | Int _ as num -> is_adj num sym
-             | _ -> false)
+           (function Int _ as num -> is_adj num sym | _ -> false)
            board)
   | _ -> None
 
-let value = function
-  | Int (e, _, _) -> e
-  | _ -> 0
+let value = function Int (e, _, _) -> e | _ -> 0
 
 let _ =
   let board = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
   board
   |> List.filter (is_part_num board)
-  |> List.map value
-  |> List.sum
-  |> string_of_int
-  |> print_endline
+  |> List.map value |> List.sum |> string_of_int |> print_endline
 
 let _ =
   let board = "gondola.txt" |> Core.In_channel.read_lines |> parse_lines in
@@ -60,7 +46,4 @@ let _ =
   |> List.filter_map (parse_gear board)
   |> List.filter (List.length >> ( = ) 2)
   |> List.map (List.map value)
-  |> List.map List.product
-  |> List.sum
-  |> string_of_int
-  |> print_endline
+  |> List.map List.product |> List.sum |> string_of_int |> print_endline
