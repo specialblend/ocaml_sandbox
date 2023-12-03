@@ -1,10 +1,4 @@
 (executable
- (public_name trebuchet)
- (name trebuchet)
- (modules trebuchet)
- (libraries core str))
-
-(executable
  (public_name cubes)
  (name cubes)
  (modules cubes)
