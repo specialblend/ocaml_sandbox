@@ -57,10 +57,12 @@ let () =
   |> List.filter (valid_game thresholds)
   |> List.map fst
   |> List.sum
-  |> (string_of_int >> print_endline)
+  |> string_of_int
+  |> print_endline
 
 let () =
   read_cubes "cubes.txt"
   |> List.map power
   |> List.sum
-  |> (string_of_int >> print_endline)
+  |> string_of_int
+  |> print_endline

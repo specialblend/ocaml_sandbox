@@ -20,4 +20,5 @@ let _ =
   |> List.map parse_line
   |> List.map count_cards
   |> List.sum
-  |> (string_of_int >> print_endline)
+  |> string_of_int
+  |> print_endline
