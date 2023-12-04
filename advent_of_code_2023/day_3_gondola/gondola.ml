@@ -16,9 +16,6 @@ let is_adjacent expr1 expr2 =
   is_between (x - String.length e', x + String.length e) x'
   && is_between (y - 1, y + 1) y'
 
-let read_board filename =
-  Core.In_channel.read_lines filename |> List.mapi parse_line |> List.flatten
-
 let () =
   let expressions =
     "gondola.txt"
