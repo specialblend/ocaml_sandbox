@@ -33,5 +33,5 @@ let read_with r f =
   |> List.map (read_line r)
   |> List.fold_left ( + ) 0
 
-let () = "trebuchet.txt" |> read_with r1 |> print_int |> print_newline
-let () = "trebuchet.txt" |> read_with r2 |> print_int |> print_newline
+let () = "trebuchet.txt" |> read_with r1 |> string_of_int |> print_endline
+let () = "trebuchet.txt" |> read_with r2 |> string_of_int |> print_endline
