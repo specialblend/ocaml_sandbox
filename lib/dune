@@ -1,6 +1,7 @@
 (library
  (name "fun")
- (modules fun))
+ (modules fun)
+ (libraries str))
 
 (library
  (name "regex")

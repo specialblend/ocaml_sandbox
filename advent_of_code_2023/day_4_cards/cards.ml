@@ -1,20 +1,17 @@
 open Fun
 
-let nth n l = List.nth l n
-let parse_nums = Str.split (Str.regexp "[ ]+")
-
 let parse_line (line : string) =
   line
   |> Str.split (Str.regexp ":")
-  |> nth 1
+  |> List.nth 1
   |> Str.split (Str.regexp "|")
-  |> List.map parse_nums
-  |> fun [ a; b ] -> (a, b)
+  |> List.map (Str.split (Str.regexp "[ ]+"))
+  |> fun [ left; right ] -> (left, right)
 
-let scan_matches (cards, numbers) =
-  List.filter (fun card -> List.mem card numbers) cards
+let points n = int_of_float (2.0 ** float_of_int (n - 1))
 
-let points n = 2.0 ** float_of_int (n - 1) |> int_of_float
+let scan_matches (left, right) =
+  List.filter (fun card -> List.exists (( = ) card) right) left
 
 let _ =
   Core.In_channel.read_lines "cards.txt"
