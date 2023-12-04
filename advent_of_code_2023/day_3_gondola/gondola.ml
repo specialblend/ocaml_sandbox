@@ -6,8 +6,8 @@ let parse_line y string =
   string |> Regex.find_all pattern |> List.map fmt_expr
 
 let value (e, _) = int_of_string_opt e
-let is_sym (e, _) = is_numeric e
-let is_num (e, l) = not (is_sym (e, l))
+let is_num (e, _) = is_numeric e
+let is_sym (e, l) = not (is_num (e, l))
 let is_gear_symbol (e, _) = e = "*"
 
 let is_adjacent expr1 expr2 =
