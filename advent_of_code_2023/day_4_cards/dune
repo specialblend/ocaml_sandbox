@@ -1,0 +1,10 @@
+(executable
+ (public_name cards)
+ (name cards)
+ (modules cards)
+ (libraries core fun str regex))
+
+(env
+ (dev
+  (flags
+   (:standard -w -8))))
