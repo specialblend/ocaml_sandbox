@@ -5,22 +5,24 @@ type cube =
   | Green of int
   | Blue of int
 
-let colon = Str.regexp ":"
-and comma = Str.regexp ", "
-and semicolon = Str.regexp ";"
-and space = Str.regexp " "
-
 let parse_cube = function
   | [ qty; "red" ] -> Red (int_of_string qty)
   | [ qty; "green" ] -> Green (int_of_string qty)
   | [ qty; "blue" ] -> Blue (int_of_string qty)
   | _ -> failwith "Invalid"
 
-let parse_game s =
-  let parse_cubes =
-    Str.split comma >> List.map (Str.split space >> parse_cube)
+let parse_game str =
+  let colon = Str.regexp ":"
+  and comma = Str.regexp ", "
+  and semicolon = Str.regexp ";"
+  and space = Str.regexp " " in
+  let parse_cubes str =
+    str
+    |> Str.split comma
+    |> List.map (fun str -> str |> Str.split space |> parse_cube)
   in
-  Str.split colon s
+  str
+  |> Str.split colon
   |> List.nth 1
   |> Str.split semicolon
   |> List.concat_map parse_cubes
