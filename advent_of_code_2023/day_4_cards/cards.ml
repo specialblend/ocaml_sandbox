@@ -16,7 +16,8 @@ let count_cards (left, right) =
   |> points
 
 let _ =
-  Core.In_channel.read_lines "cards.txt"
+  "cards.txt"
+  |> Core.In_channel.read_lines
   |> List.map parse_line
   |> List.map count_cards
   |> List.sum
