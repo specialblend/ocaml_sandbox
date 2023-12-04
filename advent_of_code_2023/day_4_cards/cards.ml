@@ -1,9 +1,7 @@
 open Fun
 
 let nth n l = List.nth l n
-
-let parse_nums numbers =
-  numbers |> Str.split (Str.regexp " ") |> List.filter (( <> ) "")
+let parse_nums = Str.split (Str.regexp "[ ]+")
 
 let parse_line (line : string) =
   line
