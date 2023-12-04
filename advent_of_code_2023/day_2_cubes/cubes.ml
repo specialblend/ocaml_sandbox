@@ -1,4 +1,3 @@
-open Str
 open Fun
 
 type cube =
@@ -6,12 +5,10 @@ type cube =
   | Green of int
   | Blue of int
 
-let sum = List.fold_left ( + ) 0
-
-let colon = regexp ":"
-and comma = regexp ", "
-and semicolon = regexp ";"
-and space = regexp " "
+let colon = Str.regexp ":"
+and comma = Str.regexp ", "
+and semicolon = Str.regexp ";"
+and space = Str.regexp " "
 
 let parse_cube = function
   | [ qty; "red" ] -> Red (int_of_string qty)
@@ -20,9 +17,13 @@ let parse_cube = function
   | _ -> failwith "Invalid"
 
 let parse_game =
-  let parse_sets = split colon >> List.nth 1 >> split semicolon in
-  let parse_cubes = split comma >> List.map (split space >> parse_cube) in
-  parse_sets >> List.concat_map parse_cubes
+  let parse_cubes =
+    Str.split comma >> List.map (Str.split space >> parse_cube)
+  in
+  Str.split colon
+  >> List.nth 1
+  >> Str.split semicolon
+  >> List.concat_map parse_cubes
 
 let valid_cube (r, g, b) = function
   | Red qty -> qty <= r
@@ -44,20 +45,22 @@ let power (_, cubes) =
   let r, g, b = max_rgb cubes in
   r * g * b
 
+let read_cubes =
+  Core.In_channel.read_lines
+  >> List.mapi (fun id line -> (id + 1, parse_game line))
+
 let () =
   let thresholds = (12, 13, 14) in
-  Core.In_channel.read_lines "cubes.txt"
-  |> List.mapi (fun id line -> (id + 1, parse_game line))
+  read_cubes "cubes.txt"
   |> List.filter (valid_game thresholds)
   |> List.map fst
-  |> sum
+  |> List.sum
   |> print_int
   |> print_newline
 
 let () =
-  Core.In_channel.read_lines "cubes.txt"
-  |> List.mapi (fun id line -> (id + 1, parse_game line))
+  read_cubes "cubes.txt"
   |> List.map power
-  |> sum
+  |> List.sum
   |> print_int
   |> print_newline
