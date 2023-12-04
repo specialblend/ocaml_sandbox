@@ -16,14 +16,14 @@ let parse_cube = function
   | [ qty; "blue" ] -> Blue (int_of_string qty)
   | _ -> failwith "Invalid"
 
-let parse_game =
+let parse_game s =
   let parse_cubes =
     Str.split comma >> List.map (Str.split space >> parse_cube)
   in
-  Str.split colon
-  >> List.nth 1
-  >> Str.split semicolon
-  >> List.concat_map parse_cubes
+  Str.split colon s
+  |> List.nth 1
+  |> Str.split semicolon
+  |> List.concat_map parse_cubes
 
 let valid_cube (r, g, b) = function
   | Red qty -> qty <= r
@@ -45,9 +45,9 @@ let power (_, cubes) =
   let r, g, b = max_rgb cubes in
   r * g * b
 
-let read_cubes =
-  Core.In_channel.read_lines
-  >> List.mapi (fun id line -> (id + 1, parse_game line))
+let read_cubes file =
+  Core.In_channel.read_lines file
+  |> List.mapi (fun id line -> (id + 1, parse_game line))
 
 let () =
   let thresholds = (12, 13, 14) in
