@@ -1,0 +1,5 @@
+(executable
+ (public_name crane)
+ (name crane)
+ (modules crane)
+ (libraries core fun regex str))
