@@ -32,7 +32,7 @@ let rec move boxes (qty, src, dst) =
           boxes
       in
       move boxes (qty - 1, src, dst)
-  | _ -> raise (Failure "illegal move")
+  | _ -> failwith "illegal move"
 
 let _ =
   Core.In_channel.read_lines "crane_moves.txt"
