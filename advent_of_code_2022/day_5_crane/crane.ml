@@ -39,7 +39,7 @@ let _ =
   |> Core.In_channel.read_lines
   |> List.filter_map parse_move
   |> List.fold_left move boxes
-  |> List.map snd
+  |> List.map (fun (_, stack) -> stack)
   |> List.map List.hd
   |> String.concat ""
   |> print_endline
