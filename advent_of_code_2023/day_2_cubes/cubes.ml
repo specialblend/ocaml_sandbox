@@ -6,7 +6,6 @@ type cube =
   | Green of int
   | Blue of int
 
-let nth n l = List.nth l n
 let sum = List.fold_left ( + ) 0
 
 let colon = regexp ":"
@@ -21,7 +20,7 @@ let parse_cube = function
   | _ -> failwith "Invalid"
 
 let parse_game =
-  let parse_sets = split colon >> nth 1 >> split semicolon in
+  let parse_sets = split colon >> List.nth 1 >> split semicolon in
   let parse_cubes = split comma >> List.map (split space >> parse_cube) in
   parse_sets >> List.concat_map parse_cubes
 
