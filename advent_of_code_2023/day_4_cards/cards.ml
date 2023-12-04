@@ -1,10 +1,14 @@
 open Fun
 
-let parse_line s =
-  Str.split (Str.regexp ":") s
+let parse_line str =
+  let colon = Str.regexp ":" in
+  let pipe = Str.regexp "|" in
+  let space = Str.regexp "[ ]+" in
+  str
+  |> Str.split colon
   |> List.nth 1
-  |> Str.split (Str.regexp "|")
-  |> List.map (Str.split (Str.regexp "[ ]+"))
+  |> Str.split pipe
+  |> List.map (Str.split space)
   |> fun [ left; right ] -> (left, right)
 
 let points n = int_of_float (2.0 ** float_of_int (n - 1))
