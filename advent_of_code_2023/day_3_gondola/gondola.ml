@@ -1,41 +1,40 @@
 open Fun
 
 let parse_line y str =
-  Regex.find_all (Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)") str
-  |> List.map (fun (e, x) -> (e, (x, y)))
+  let exp = "\\([0-9]+\\)\\|\\([^\\.]\\)" in
+  Regex.find_all (Str.regexp exp) str |> List.map (fun (e, x) -> (e, (x, y)))
 
-let len = String.length
-let is_sym (e, _) = int_of_string_opt e = None
+let evaluate (e, _) = int_of_string_opt e
+let is_sym (e, _) = is_numeric e
 let is_num (e, l) = not (is_sym (e, l))
+let is_gear_symbol (e, _) = e = "*"
 
-let is_adj (e, (x, y)) (e', (x', y')) =
-  is_between (x - len e', x + len e) x' && is_between (y - 1, y + 1) y'
+let is_adjacent expr1 expr2 =
+  let e, (x, y) = expr1
+  and e', (x', y') = expr2 in
+  is_between (x - String.length e', x + String.length e) x'
+  && is_between (y - 1, y + 1) y'
 
-let is_part_num board num = List.exists (is_adj num) (List.filter is_sym board)
-let count_gear board gear = List.filter (is_adj gear) (List.filter is_num board)
-
-let read_board =
-  Core.In_channel.read_lines >> List.mapi parse_line >> List.flatten
+let read_board filename =
+  Core.In_channel.read_lines filename |> List.mapi parse_line |> List.flatten
 
 let _ =
   let board = read_board "gondola.txt" in
+  let symbols = List.filter is_sym board in
   List.filter is_num board
-  |> List.filter (is_part_num board)
-  |> List.filter_map (fst >> int_of_string_opt)
+  |> List.filter (fun number -> List.exists (is_adjacent number) symbols)
+  |> List.filter_map evaluate
   |> List.sum
   |> string_of_int
   |> print_endline
 
 let _ =
   let board = read_board "gondola.txt" in
-  List.filter
-    (function
-      | "*", _ -> true
-      | _ -> false)
-    board
-  |> List.map (count_gear board)
-  |> List.filter (List.length >> ( = ) 2)
-  |> List.map (List.filter_map (fst >> int_of_string_opt))
+  let numbers = List.filter is_num board in
+  List.filter is_gear_symbol board
+  |> List.map (fun symbol -> List.filter (is_adjacent symbol) numbers)
+  |> List.filter (fun parts -> List.length parts = 2)
+  |> List.map (List.filter_map evaluate)
   |> List.map List.product
   |> List.sum
   |> string_of_int
