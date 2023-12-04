@@ -35,7 +35,8 @@ let rec move boxes (qty, src, dst) =
   | _ -> failwith "illegal move"
 
 let _ =
-  Core.In_channel.read_lines "crane_moves.txt"
+  "crane_moves.txt"
+  |> Core.In_channel.read_lines
   |> List.filter_map parse_move
   |> List.fold_left move boxes
   |> List.map snd
