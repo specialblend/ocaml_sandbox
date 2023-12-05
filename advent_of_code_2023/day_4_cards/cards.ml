@@ -36,10 +36,10 @@ let _ =
 
   let counter = Array.make (List.length winning_cards) 1 in
 
-  let count_copies counter (index, win_count) =
-    let n = counter.(index) in
+  let count_copies counter (i, win_count) =
+    let n = counter.(i) in
     let _ =
-      for k = index + 1 to index + win_count do
+      for k = i + 1 to i + win_count do
         counter.(k) <- counter.(k) + n
       done
     in
