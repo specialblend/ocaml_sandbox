@@ -28,13 +28,6 @@ let _ =
   |> string_of_int
   |> print_endline
 
-let _print_counts counts =
-  counts
-  |> Array.map string_of_int
-  |> Array.to_list
-  |> String.concat ","
-  |> print_endline
-
 let _ =
   let cards =
     "cards.txt"
