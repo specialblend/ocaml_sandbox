@@ -34,7 +34,7 @@ let _ =
     |>| Core.In_channel.read_lines
     |>| List.map (parse_line >> count_wins)
   in
-  let counter = Array.make (List.length cards) 1 in
+  let counter = cards |> List.fill 1 |> Array.of_list in
   let count_copies counter (i, win_count) =
     let n = counter.(i) in
     for k = i + 1 to i + win_count do
