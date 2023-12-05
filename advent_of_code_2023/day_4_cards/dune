@@ -4,6 +4,12 @@
  (modules cards)
  (libraries core fun str regex))
 
+(executable
+ (public_name cards_fun)
+ (name cards_fun)
+ (modules cards_fun)
+ (libraries core fun str regex))
+
 (env
  (dev
   (flags

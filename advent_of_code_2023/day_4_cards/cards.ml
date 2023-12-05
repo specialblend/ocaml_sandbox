@@ -47,7 +47,6 @@ let _ =
   winning_cards
   |> List.mapi pair
   |> List.fold_left count_copies counter
-  |> Array.to_list
-  |> List.sum
+  |> Array.sum
   |> string_of_int
   |> print_endline
