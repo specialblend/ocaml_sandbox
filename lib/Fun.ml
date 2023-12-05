@@ -1,5 +1,6 @@
 let is_between (min, max) x = min <= x && x <= max
 let is_numeric e = int_of_string_opt e <> None
+let pair x y = (x, y)
 
 module List = struct
   module L = List
