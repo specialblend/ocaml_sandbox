@@ -1,0 +1,5 @@
+(executable
+ (name seeds)
+ (public_name seeds)
+ (modules seeds)
+ (libraries core fun regex str))
