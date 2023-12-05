@@ -1,7 +1,7 @@
 open Fun
 
 let _ =
-  let parse = Regex.find_all_loc (Str.regexp "[0-9]+") >> List.map fst in
+  let parse = Regex.find_all (Str.regexp "[0-9]+") in
   let parse =
     Str.split_by "\n"
     >> List.map parse

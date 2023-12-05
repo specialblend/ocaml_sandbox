@@ -15,3 +15,5 @@ let find_all_loc (r : regexp) (s : string) : t list =
     | Not_found -> acc
   in
   find [] 0
+
+let find_all r s = find_all_loc r s |> List.map fst
