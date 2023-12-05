@@ -17,13 +17,13 @@ let count_cards (left, right) =
   left
   |> List.filter (fun card -> right |> List.exists (( = ) card))
   |> List.length
-  |> points
 
 let _ =
   "cards.txt"
   |> Core.In_channel.read_lines
   |> List.map parse_line
   |> List.map count_cards
+  |> List.map points
   |> List.sum
   |> string_of_int
   |> print_endline
