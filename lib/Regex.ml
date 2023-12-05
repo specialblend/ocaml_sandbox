@@ -2,7 +2,7 @@ open Str
 
 type t = string * int
 
-let find_all (r : regexp) (s : string) : t list =
+let find_all_loc (r : regexp) (s : string) : t list =
   let _l = String.length s in
   let rec find acc i =
     try

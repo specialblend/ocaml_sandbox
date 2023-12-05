@@ -3,7 +3,7 @@ open Fun
 let parse_line y string =
   let pattern = Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)" in
   let fmt_expr (e, x) = (e, (x, y)) in
-  string |> Regex.find_all pattern |> List.map fmt_expr
+  string |> Regex.find_all_loc pattern |> List.map fmt_expr
 
 let value (e, _) = int_of_string_opt e
 let is_num (e, _) = is_numeric e

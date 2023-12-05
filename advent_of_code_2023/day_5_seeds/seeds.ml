@@ -1,13 +1,13 @@
 open Fun
 
 let _ =
-  let parse_line = Regex.find_all (Str.regexp "[0-9]+") >> List.map fst in
-  let parse_section =
+  let parse = Regex.find_all_loc (Str.regexp "[0-9]+") >> List.map fst in
+  let parse =
     Str.split_by "\n"
-    >> List.map parse_line
+    >> List.map parse
     >> List.filter (fun x -> List.length x > 0)
   in
-  let parse_file = Str.split_by "\n\n" >> List.map parse_section in
+  let parse = Str.split_by "\n\n" >> List.map parse in
 
   let print_data data =
     data
@@ -16,4 +16,4 @@ let _ =
            data |> List.iter (String.concat "," >> print_endline))
   in
 
-  "seeds_sample.txt" |> Core.In_channel.read_all |> parse_file |> print_data
+  "seeds_sample.txt" |> Core.In_channel.read_all |> parse |> print_data
