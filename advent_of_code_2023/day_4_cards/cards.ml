@@ -40,7 +40,6 @@ let _ =
     in
     counter
   in
-
   cards
   |> List.mapi pair
   |> List.fold_left count_copies counter

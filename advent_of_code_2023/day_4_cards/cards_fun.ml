@@ -36,7 +36,6 @@ let _ =
     let r = (i + 1, i + win_count) in
     counter ->| List.update_range (fun v -> v + n) r
   in
-
   cards
   ->| List.mapi pair
   ->| List.fold_left count_copies counter
