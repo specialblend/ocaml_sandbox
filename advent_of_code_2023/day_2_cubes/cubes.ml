@@ -18,14 +18,14 @@ let parse_game str =
   and space = Str.regexp " " in
   let parse_cubes str =
     str
-    |> Str.split comma
-    |> List.map (fun str -> str |> Str.split space |> parse_cube)
+    |>| Str.split comma
+    |>| List.map (fun str -> str |> Str.split space |> parse_cube)
   in
   str
-  |> Str.split colon
-  |> List.nth 1
-  |> Str.split semicolon
-  |> List.concat_map parse_cubes
+  |>| Str.split colon
+  |>| List.nth 1
+  |>| Str.split semicolon
+  |>| List.concat_map parse_cubes
 
 let valid_cube (r, g, b) = function
   | Red qty -> qty <= r
@@ -49,20 +49,20 @@ let power (_, cubes) =
 
 let read_cubes file =
   Core.In_channel.read_lines file
-  |> List.mapi (fun id line -> (id + 1, parse_game line))
+  |>| List.mapi (fun id line -> (id + 1, parse_game line))
 
 let () =
   let thresholds = (12, 13, 14) in
   read_cubes "cubes.txt"
-  |> List.filter (valid_game thresholds)
-  |> List.map fst
-  |> List.sum
-  |> string_of_int
-  |> print_endline
+  |>| List.filter (valid_game thresholds)
+  |>| List.map fst
+  |>| List.sum
+  |>| string_of_int
+  |>| print_endline
 
 let () =
   read_cubes "cubes.txt"
-  |> List.map power
-  |> List.sum
-  |> string_of_int
-  |> print_endline
+  |>| List.map power
+  |>| List.sum
+  |>| string_of_int
+  |>| print_endline
