@@ -1,4 +1,5 @@
 open Str
+open Fun
 
 let r1 = Str.regexp "[0-9]"
 
@@ -29,9 +30,7 @@ let read_line r l =
   (x * 10) + y
 
 let read_with r f =
-  Core.In_channel.read_lines f
-  |> List.map (read_line r)
-  |> List.fold_left ( + ) 0
+  Core.In_channel.read_lines f |> List.map (read_line r) |> List.sum
 
 let () = "trebuchet.txt" |> read_with r1 |> string_of_int |> print_endline
 let () = "trebuchet.txt" |> read_with r2 |> string_of_int |> print_endline

@@ -17,14 +17,14 @@ let is_adjacent expr1 expr2 =
   && is_between (y - 1, y + 1) y'
 
 let () =
-  let expressions =
+  let exprs =
     "gondola.txt"
     |> Core.In_channel.read_lines
     |> List.mapi parse_line
     |> List.flatten
   in
-  let symbols = expressions |> List.filter is_sym
-  and numbers = expressions |> List.filter is_num in
+  let symbols = exprs |> List.filter is_sym
+  and numbers = exprs |> List.filter is_num in
   numbers
   |> List.filter (fun number -> List.exists (is_adjacent number) symbols)
   |> List.filter_map value
@@ -33,26 +33,22 @@ let () =
   |> print_endline
 
 let () =
-  let expressions =
+  let exprs =
     "gondola.txt"
     |> Core.In_channel.read_lines
     |> List.mapi parse_line
     |> List.flatten
   in
-  let numbers = List.filter is_num expressions in
-  let find_gears expressions =
-    expressions
+  let numbers = List.filter is_num exprs in
+  let find_gears exprs =
+    exprs
     |> List.filter is_gear_symbol
     |> List.map (fun symbol -> List.filter (is_adjacent symbol) numbers)
     |> List.filter (fun parts -> List.length parts = 2)
-  and calculate_gear_ratios gears =
+  and calc_gear_ratios gears =
     gears
     |> List.map (List.filter_map value)
     |> List.map List.product
     |> List.sum
   in
-  expressions
-  |> find_gears
-  |> calculate_gear_ratios
-  |> string_of_int
-  |> print_endline
+  exprs |> find_gears |> calc_gear_ratios |> string_of_int |> print_endline
