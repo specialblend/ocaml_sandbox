@@ -34,7 +34,7 @@ let _ =
     |> List.map count_wins
   in
 
-  let init_counter = Array.make (List.length winning_cards) 1 in
+  let counter = Array.make (List.length winning_cards) 1 in
 
   let count_copies counter (index, win_count) =
     let n = counter.(index) in
@@ -48,7 +48,7 @@ let _ =
 
   winning_cards
   |> List.mapi pair
-  |> List.fold_left count_copies init_counter
+  |> List.fold_left count_copies counter
   |> Array.to_list
   |> List.sum
   |> string_of_int
