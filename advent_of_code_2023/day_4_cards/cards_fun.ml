@@ -30,15 +30,15 @@ let _ =
     ->| Core.In_channel.read_lines
     ->| List.map (parse_line ->. count_wins)
   in
-  let counter = cards ->| List.fill 1 in
-  let count_copies counter (i, win_count) =
-    let n = List.nth i counter in
+  let total = cards ->| List.fill 1 in
+  let count total (i, win_count) =
+    let n = List.nth i total in
     let r = (i + 1, i + win_count) in
-    counter ->| List.update_range (fun v -> v + n) r
+    total ->| List.update_range (fun v -> v + n) r
   in
   cards
   ->| List.mapi pair
-  ->| List.fold_left count_copies counter
+  ->| List.fold_left count total
   ->| List.sum
   ->| string_of_int
   ->| print_endline
