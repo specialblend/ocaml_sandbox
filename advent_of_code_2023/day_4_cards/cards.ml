@@ -14,7 +14,9 @@ let parse_line str =
 let points n = int_of_float (2.0 ** float_of_int (n - 1))
 
 let count_wins (left, right) =
-  left |> List.filter (fun card -> right |> List.mem card) |> List.length
+  left
+  |> List.filter (fun card -> right |> List.mem card)
+  |> List.length
 
 let _ =
   "cards.txt"
