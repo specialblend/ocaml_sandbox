@@ -1,9 +1,9 @@
 open Fun
 
 let parse_line y string =
-  let pattern = Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)" in
-  let fmt_expr (e, x) = (e, (x, y)) in
-  string |> Regex.find_all_loc pattern |> List.map fmt_expr
+  string
+  |>| Regex.find_all_loc (Str.regexp "\\([0-9]+\\)\\|\\([^\\.]\\)")
+  |>| List.map (fun (e, x) -> (e, (x, y)))
 
 let value (e, _) = int_of_string_opt e
 let is_num (e, _) = is_numeric e
@@ -17,38 +17,42 @@ let is_adjacent expr1 expr2 =
   && is_between (y - 1, y + 1) y'
 
 let () =
-  let exprs =
+  let expressions =
     "gondola.txt"
-    |> Core.In_channel.read_lines
-    |> List.mapi parse_line
-    |> List.flatten
+    |>| Core.In_channel.read_lines
+    |>| List.mapi parse_line
+    |>| List.flatten
   in
-  let symbols = exprs |> List.filter is_sym
-  and numbers = exprs |> List.filter is_num in
+  let symbols = expressions |> List.filter is_sym
+  and numbers = expressions |> List.filter is_num in
   numbers
-  |> List.filter (fun number -> List.exists (is_adjacent number) symbols)
-  |> List.filter_map value
-  |> List.sum
-  |> string_of_int
-  |> print_endline
+  |>| List.filter (fun number -> List.exists (is_adjacent number) symbols)
+  |>| List.filter_map value
+  |>| List.sum
+  |>| string_of_int
+  |>| print_endline
 
 let () =
-  let exprs =
+  let expressions =
     "gondola.txt"
-    |> Core.In_channel.read_lines
-    |> List.mapi parse_line
-    |> List.flatten
+    |>| Core.In_channel.read_lines
+    |>| List.mapi parse_line
+    |>| List.flatten
   in
-  let numbers = List.filter is_num exprs in
-  let find_gears exprs =
-    exprs
-    |> List.filter is_gear_symbol
-    |> List.map (fun symbol -> List.filter (is_adjacent symbol) numbers)
-    |> List.filter (fun parts -> List.length parts = 2)
+  let numbers = List.filter is_num expressions in
+  let find_gears expressions =
+    expressions
+    |>| List.filter is_gear_symbol
+    |>| List.map (fun symbol -> List.filter (is_adjacent symbol) numbers)
+    |>| List.filter (fun parts -> List.length parts = 2)
   and calc_gear_ratios gears =
     gears
-    |> List.map (List.filter_map value)
-    |> List.map List.product
-    |> List.sum
+    |>| List.map (List.filter_map value)
+    |>| List.map List.product
+    |>| List.sum
   in
-  exprs |> find_gears |> calc_gear_ratios |> string_of_int |> print_endline
+  expressions
+  |>| find_gears
+  |>| calc_gear_ratios
+  |>| string_of_int
+  |>| print_endline
