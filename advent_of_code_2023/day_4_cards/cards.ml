@@ -38,9 +38,11 @@ let _ =
 
   let count_copies counter (i, win_count) =
     let n = counter.(i) in
-    for k = i + 1 to i + win_count do
-      counter.(k) <- counter.(k) + n
-    done;
+    let _ =
+      for k = i + 1 to i + win_count do
+        counter.(k) <- counter.(k) + n
+      done
+    in
     counter
   in
 
