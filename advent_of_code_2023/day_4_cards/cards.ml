@@ -19,23 +19,18 @@ let count_wins (left, right) =
 let _ =
   "cards.txt"
   |> Core.In_channel.read_lines
-  |> List.map parse_line
-  |> List.map count_wins
-  |> List.map points
+  |> List.map (parse_line >> count_wins >> points)
   |> List.sum
   |> string_of_int
   |> print_endline
 
 let _ =
-  let winning_cards =
+  let cards =
     "cards.txt"
     |> Core.In_channel.read_lines
-    |> List.map parse_line
-    |> List.map count_wins
+    |> List.map (parse_line >> count_wins)
   in
-
-  let counter = Array.make (List.length winning_cards) 1 in
-
+  let counter = Array.make (List.length cards) 1 in
   let count_copies counter (i, win_count) =
     let n = counter.(i) in
     let _ =
@@ -46,7 +41,7 @@ let _ =
     counter
   in
 
-  winning_cards
+  cards
   |> List.mapi pair
   |> List.fold_left count_copies counter
   |> Array.sum

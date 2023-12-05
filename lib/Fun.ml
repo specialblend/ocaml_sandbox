@@ -15,6 +15,7 @@ end
 module List = struct
   include List
 
+  let fill x = map (fun _ -> x)
   let sum = fold_left ( + ) 0
   let product = fold_left ( * ) 1
   let nth n l = nth l n
