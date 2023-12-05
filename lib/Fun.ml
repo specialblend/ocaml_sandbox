@@ -17,6 +17,7 @@ module List = struct
   let sum = fold_left ( + ) 0
   let product = fold_left ( * ) 1
   let nth n l = nth l n
+  let contains e l = mem l e
 
   let update_range fn (i, i') =
     mapi (fun k v -> if k |> is_between (i, i') then fn v else v)
