@@ -11,11 +11,23 @@ type seed_data = seed list * mapping list list [@@deriving show]
 let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
 
 let parse_triple = function
-  | [ src; dst; margin ] -> Some (src, dst, margin)
+  | [ dst; src; range ] -> Some (dst, src, range)
   | _ -> None
 
 let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
 let parse_mappings = List.map (List.filter_map parse_mapping)
+
+let lookup_seed_map (n : int) = function
+  | dst, src, range when is_between (src, src + range) n -> Some (dst + n - src)
+  | _ -> None
+
+let lookup_seed_maps (n : int) (m : mapping list) =
+  List.fold_left
+    (fun acc x ->
+      match acc with
+      | Some x -> Some x
+      | None -> lookup_seed_map n x)
+    None m
 
 let parse_sect sect =
   sect
@@ -34,5 +46,10 @@ let _ =
   "seeds_sample.txt"
   |>| Core.In_channel.read_all
   |>| parse_all
-  |>| Option.map show_seed_data 
-  |>| Option.map print_endline
+  |>| Option.map (show_seed_data >> print_endline)
+
+let _ =
+  "seeds_sample.txt"
+  |>| Core.In_channel.read_all
+  |>| parse_all
+  |>| Option.map (show_seed_data >> print_endline)
