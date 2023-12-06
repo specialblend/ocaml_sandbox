@@ -5,6 +5,8 @@ and _EOL = Str.regexp "\n"
 and _EOL2 = Str.regexp "\n\n"
 
 type mapping = int * int * int
+type seed = int
+type seed_data = seed list * mapping list list
 
 let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
 
@@ -21,7 +23,7 @@ let parse_sect sect =
   |>| List.map (Regex.find_all _NUM)
   |>| List.filter (fun x -> List.length x > 0)
 
-let parse_all text =
+let parse_all text : seed_data option =
   Str.split _EOL2 text
   |>| List.map parse_sect
   |>| function
