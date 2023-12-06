@@ -29,12 +29,6 @@ let read_line r l =
   in
   (x * 10) + y
 
-let read_with regex file =
-  file
-  |>| Core.In_channel.read_lines
-  |>| List.map (read_line regex)
-  |>| List.sum
-
 let () =
   "trebuchet.txt"
   |>| Core.In_channel.read_lines
