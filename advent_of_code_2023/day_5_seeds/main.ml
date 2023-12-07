@@ -9,7 +9,7 @@ let _ =
   |>| print_endline
 
 let _ =
-  "seeds_sample.txt"
+  "seeds.txt"
   |>| Core.In_channel.read_all
   |>| parse_all
   |>| get_lowest_location
