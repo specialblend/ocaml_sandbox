@@ -71,3 +71,20 @@ let%expect_test "lookup_chain 14" =
 
   Seeds.lookup_chain seed sections |> print_int;
   [%expect {| 43 |}]
+
+let%expect_test "map seeds to final numbers" =
+  let seeds = [ 79; 14; 55; 13 ] in
+  let _, sections = Seeds.parse_all seeds_sample_text in
+
+  List.map (fun seed -> Seeds.lookup_chain seed sections) seeds
+  |> List.map string_of_int
+  |> String.concat " "
+  |> print_endline;
+  [%expect {| 82 43 86 35 |}]
+
+let%expect_test "get smallest final number" =
+  let seeds = [ 79; 14; 55; 13 ] in
+  let _, sections = Seeds.parse_all seeds_sample_text in
+
+  Seeds.get_lowest_location (seeds, sections) |> string_of_int |> print_endline;
+  [%expect {| 35 |}]

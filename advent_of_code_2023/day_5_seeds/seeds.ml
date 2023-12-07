@@ -8,7 +8,8 @@ type mapping = int * int * int [@@deriving show]
 type seed = int [@@deriving show]
 type seeds = seed list [@@deriving show]
 type section = mapping list [@@deriving show]
-type seed_data = seed list * section list [@@deriving show]
+type sections = section list [@@deriving show]
+type seed_data = seeds * sections [@@deriving show]
 
 let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
 
@@ -39,6 +40,10 @@ let lookup_seed n section =
   | None -> n
 
 let lookup_chain = List.fold_left lookup_seed
+
+let get_lowest_location (seeds, sections) =
+  List.map (fun seed -> lookup_chain seed sections) seeds
+  |> List.fold_left min max_int
 
 let parse_sect sect =
   sect

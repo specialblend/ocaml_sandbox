@@ -12,5 +12,6 @@ let _ =
   "seeds_sample.txt"
   |>| Core.In_channel.read_all
   |>| parse_all
-  |>| show_seed_data
+  |>| get_lowest_location
+  |>| string_of_int
   |>| print_endline
