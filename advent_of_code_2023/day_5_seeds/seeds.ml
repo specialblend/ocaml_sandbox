@@ -6,6 +6,7 @@ and _EOL2 = Str.regexp "\n\n"
 
 type mapping = int * int * int [@@deriving show]
 type seed = int [@@deriving show]
+type seeds = seed list [@@deriving show]
 type seed_data = seed list * mapping list list [@@deriving show]
 
 let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
@@ -35,21 +36,9 @@ let parse_sect sect =
   |>| List.map (Regex.find_all _NUM >> List.rev)
   |>| List.filter (fun x -> List.length x > 0)
 
-let parse_all text : seed_data option =
+let parse_all text =
   Str.split _EOL2 text
   |>| List.map parse_sect
   |>| function
-  | h :: t -> Some (parse_seeds h, parse_mappings t)
-  | _ -> None
-
-let _ =
-  "seeds_sample.txt"
-  |>| Core.In_channel.read_all
-  |>| parse_all
-  |>| Option.map (show_seed_data >> print_endline)
-
-let _ =
-  "seeds_sample.txt"
-  |>| Core.In_channel.read_all
-  |>| parse_all
-  |>| Option.map (show_seed_data >> print_endline)
+  | h :: t -> (parse_seeds h, parse_mappings t)
+  | _ -> failwith "illegal"
