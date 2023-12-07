@@ -51,12 +51,23 @@ let%expect_test "parse_all" =
        [(88, 18, 7); (18, 25, 70)]; [(45, 77, 23); (81, 45, 19); (68, 64, 13)];
        [(0, 69, 1); (1, 0, 69)]; [(60, 56, 37); (56, 93, 4)]]) |}]
 
-let%expect_test "lookup_seed_maps" =
+let%expect_test "lookup_seed when exists" =
   let seed = 79 in
   let mappings = [ (50, 98, 2); (52, 50, 48) ] in
 
-  match Seeds.lookup_seed_maps seed mappings with
-  | None -> failwith "no seed map found"
-  | Some seed ->
-      print_int seed;
-      [%expect {| 81 |}]
+  Seeds.lookup_seed seed mappings |> print_int;
+  [%expect {| 81 |}]
+
+let%expect_test "lookup_seed when not exists" =
+  let seed = 14 in
+  let mappings = [ (50, 98, 2); (52, 50, 48) ] in
+
+  Seeds.lookup_seed seed mappings |> print_int;
+  [%expect {| 14 |}]
+
+let%expect_test "lookup_chain 14" =
+  let seed = 14 in
+  let _, sections = Seeds.parse_all seeds_sample_text in
+
+  Seeds.lookup_chain seed sections |> print_int;
+  [%expect {| 43 |}]
