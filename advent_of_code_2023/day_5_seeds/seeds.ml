@@ -60,26 +60,16 @@ let look_section n section =
   | Some x -> x
   | None -> n
 
-(* let look_table n sections =
-   let rec look' res i =
-     try
-       let section = sections.(i) in
-       let res' = look_section res section in
-       look' res' (i + 1)
-     with
-     | _ -> res
-   in
-   look' n 0 *)
-
 let look_table n sections =
-  let res = ref n in
-  let _ =
-    for i = 0 to Array.length sections - 1 do
+  let rec look' res i =
+    try
       let section = sections.(i) in
-      res := look_section !res section
-    done
+      let res' = look_section res section in
+      look' res' (i + 1)
+    with
+    | _ -> res
   in
-  !res
+  look' n 0
 
 let look_seed_range sections (seed, offset) =
   let res = ref max_int in
