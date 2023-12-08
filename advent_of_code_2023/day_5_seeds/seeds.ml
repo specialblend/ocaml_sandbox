@@ -4,10 +4,19 @@ let _NUM = Str.regexp "[0-9]+"
 and _EOL = Str.regexp "\n"
 and _EOL2 = Str.regexp "\n\n"
 
-type table = int array * (int * int * int) array array [@@deriving show]
+type table = (int * int * int) array array * (int * int) array [@@deriving show]
+
+let rec chunk_pairs = function
+  | x :: y :: rest -> (x, y) :: chunk_pairs rest
+  | _ -> []
 
 let parse_seeds =
   List.concat_map (List.filter_map int_of_string_opt) >> Array.of_list
+
+let parse_seed_pairs =
+  List.concat_map (List.filter_map int_of_string_opt)
+  >> chunk_pairs
+  >> Array.of_list
 
 let parse_triple = function
   | [ dst; src; range ] -> Some (dst, src, range)
@@ -26,7 +35,7 @@ let parse_all text =
   Str.split _EOL2 text
   |>| List.map parse_sect
   |>| function
-  | h :: t -> (parse_seeds h, parse_mappings (Array.of_list t))
+  | h :: t -> (parse_mappings (Array.of_list t), parse_seed_pairs h)
   | _ -> failwith "illegal"
 
 let look_row n row =
@@ -70,4 +79,27 @@ let look_table n sections =
       res := look_section !res section
     done
   in
+  !res
+
+let look_seed_range sections (seed, offset) =
+  let res = ref max_int in
+  let _ =
+    for n = seed to seed + offset do
+      let r = look_table n sections in
+      if r < !res then res := r
+    done
+  in
+  !res
+
+let look_seed_ranges (sections, seed_ranges) =
+  let res = ref max_int in
+
+  for i = 0 to Array.length seed_ranges - 1 do
+    let seed_range = seed_ranges.(i) in
+    let start, end' = seed_range in
+    Format.sprintf "$ %d \n" start |> print_endline;
+    let r = look_seed_range sections seed_range in
+    if r < !res then res := r;
+    Format.sprintf "# %d -> %d -> %d\n" start end' r |> print_endline
+  done;
   !res

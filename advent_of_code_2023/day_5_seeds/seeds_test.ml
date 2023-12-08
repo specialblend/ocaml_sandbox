@@ -42,7 +42,8 @@ let%expect_test "parse seeds" =
   let table = Seeds.parse_all seeds_sample_text in
 
   table |> Seeds.show_table |> print_endline;
-  [%expect {|
+  [%expect
+    {|
     ([|79; 14; 55; 13|],
      [|[|(50, 98, 2); (52, 50, 48)|]; [|(0, 15, 37); (37, 52, 2); (39, 0, 15)|];
        [|(49, 53, 8); (0, 11, 42); (42, 0, 7); (57, 7, 4)|];
@@ -66,17 +67,13 @@ let%expect_test "look_section when not exists" =
 
 let%expect_test "look_table 14" =
   let seed = 14 in
-  let _, sections = Seeds.parse_all seeds_sample_text in
+  let sections, _ = Seeds.parse_all seeds_sample_text in
 
   Seeds.look_table seed sections |> print_int;
   [%expect {| 43 |}]
 
 let%expect_test "map seeds to final numbers" =
-  let seeds, sections = Seeds.parse_all seeds_sample_text in
+  let sections, _ = Seeds.parse_all seeds_sample_text in
 
-  Array.map (fun seed -> Seeds.look_table seed sections) seeds
-  |> Array.map string_of_int
-  |> Array.to_list
-  |> String.concat " "
-  |> print_endline;
-  [%expect {| 82 43 86 35 |}]
+  Seeds.look_table 79 sections |> string_of_int |> print_endline;
+  [%expect {| 82 |}]

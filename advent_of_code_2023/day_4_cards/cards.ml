@@ -9,7 +9,9 @@ let parse_line str =
   |>| List.nth 1
   |>| Str.split pipe
   |>| List.map (Str.split space)
-  |>| fun [ left; right ] -> (left, right)
+  |>| function
+  | [ left; right ] -> (left, right)
+  | _ -> failwith "bad input"
 
 let points n = int_of_float (2.0 ** float_of_int (n - 1))
 
