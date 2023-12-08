@@ -1,4 +1,4 @@
-open Fun
+(* open Fun *)
 
 let seeds_sample_text =
   {|
@@ -38,53 +38,45 @@ humidity-to-location map:
 56 93 4
 |}
 
-let%expect_test "parse_all" =
-  seeds_sample_text
-  |>| Seeds.parse_all
-  |>| Seeds.show_seed_data
-  |>| print_endline;
-  [%expect
-    {|
-    ([79; 14; 55; 13],
-     [[(50, 98, 2); (52, 50, 48)]; [(0, 15, 37); (37, 52, 2); (39, 0, 15)];
-       [(49, 53, 8); (0, 11, 42); (42, 0, 7); (57, 7, 4)];
-       [(88, 18, 7); (18, 25, 70)]; [(45, 77, 23); (81, 45, 19); (68, 64, 13)];
-       [(0, 69, 1); (1, 0, 69)]; [(60, 56, 37); (56, 93, 4)]]) |}]
+let%expect_test "parse seeds" =
+  let table = Seeds.parse_all seeds_sample_text in
 
-let%expect_test "lookup_seed when exists" =
+  table |> Seeds.show_table |> print_endline;
+  [%expect {|
+    ([|79; 14; 55; 13|],
+     [|[|(50, 98, 2); (52, 50, 48)|]; [|(0, 15, 37); (37, 52, 2); (39, 0, 15)|];
+       [|(49, 53, 8); (0, 11, 42); (42, 0, 7); (57, 7, 4)|];
+       [|(88, 18, 7); (18, 25, 70)|];
+       [|(45, 77, 23); (81, 45, 19); (68, 64, 13)|]; [|(0, 69, 1); (1, 0, 69)|];
+       [|(60, 56, 37); (56, 93, 4)|]|]) |}]
+
+let%expect_test "look_section when exists" =
   let seed = 79 in
-  let mappings = [ (50, 98, 2); (52, 50, 48) ] in
+  let mappings = [| (50, 98, 2); (52, 50, 48) |] in
 
-  Seeds.lookup_seed seed mappings |> print_int;
+  Seeds.look_section seed mappings |> print_int;
   [%expect {| 81 |}]
 
-let%expect_test "lookup_seed when not exists" =
+let%expect_test "look_section when not exists" =
   let seed = 14 in
-  let mappings = [ (50, 98, 2); (52, 50, 48) ] in
+  let mappings = [| (50, 98, 2); (52, 50, 48) |] in
 
-  Seeds.lookup_seed seed mappings |> print_int;
+  Seeds.look_section seed mappings |> print_int;
   [%expect {| 14 |}]
 
-let%expect_test "lookup_chain 14" =
+let%expect_test "look_table 14" =
   let seed = 14 in
   let _, sections = Seeds.parse_all seeds_sample_text in
 
-  Seeds.lookup_chain seed sections |> print_int;
+  Seeds.look_table seed sections |> print_int;
   [%expect {| 43 |}]
 
 let%expect_test "map seeds to final numbers" =
-  let seeds = [ 79; 14; 55; 13 ] in
-  let _, sections = Seeds.parse_all seeds_sample_text in
+  let seeds, sections = Seeds.parse_all seeds_sample_text in
 
-  List.map (fun seed -> Seeds.lookup_chain seed sections) seeds
-  |> List.map string_of_int
+  Array.map (fun seed -> Seeds.look_table seed sections) seeds
+  |> Array.map string_of_int
+  |> Array.to_list
   |> String.concat " "
   |> print_endline;
   [%expect {| 82 43 86 35 |}]
-
-let%expect_test "get smallest final number" =
-  let seeds = [ 79; 14; 55; 13 ] in
-  let _, sections = Seeds.parse_all seeds_sample_text in
-
-  Seeds.get_lowest_location (seeds, sections) |> string_of_int |> print_endline;
-  [%expect {| 35 |}]

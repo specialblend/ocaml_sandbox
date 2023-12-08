@@ -4,46 +4,17 @@ let _NUM = Str.regexp "[0-9]+"
 and _EOL = Str.regexp "\n"
 and _EOL2 = Str.regexp "\n\n"
 
-type mapping = int * int * int [@@deriving show]
-type seed = int [@@deriving show]
-type seeds = seed list [@@deriving show]
-type section = mapping list [@@deriving show]
-type sections = section list [@@deriving show]
-type seed_data = seeds * sections [@@deriving show]
+type table = int array * (int * int * int) array array [@@deriving show]
 
-let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
+let parse_seeds =
+  List.concat_map (List.filter_map int_of_string_opt) >> Array.of_list
 
 let parse_triple = function
   | [ dst; src; range ] -> Some (dst, src, range)
   | _ -> None
 
 let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
-let parse_mappings = List.map (List.filter_map parse_mapping)
-
-let lookup_seed n section =
-  let look n mapping =
-    match mapping with
-    | dst, src, range when is_between (src, src + range) n ->
-        Some (dst + n - src)
-    | _ -> None
-  in
-  let r =
-    List.fold_left
-      (fun acc x ->
-        match acc with
-        | Some x -> Some x
-        | None -> look n x)
-      None section
-  in
-  match r with
-  | Some x -> x
-  | None -> n
-
-let lookup_chain = List.fold_left lookup_seed
-
-let get_lowest_location (seeds, sections) =
-  List.map (fun seed -> lookup_chain seed sections) seeds
-  |> List.fold_left min max_int
+let parse_mappings = Array.map (List.filter_map parse_mapping >> Array.of_list)
 
 let parse_sect sect =
   sect
@@ -55,5 +26,48 @@ let parse_all text =
   Str.split _EOL2 text
   |>| List.map parse_sect
   |>| function
-  | h :: t -> (parse_seeds h, parse_mappings t)
+  | h :: t -> (parse_seeds h, parse_mappings (Array.of_list t))
   | _ -> failwith "illegal"
+
+let look_row n row =
+  let dst, src, range = row in
+  if is_between (src, src + range) n then
+    Some (dst + n - src)
+  else
+    None
+
+let look_section n section =
+  let rec look' res i =
+    try
+      let row = section.(i) in
+      match look_row n row with
+      | Some x -> Some x
+      | None -> look' res (i + 1)
+    with
+    | _ -> res
+  in
+  let r = look' None 0 in
+  match r with
+  | Some x -> x
+  | None -> n
+
+(* let look_table n sections =
+   let rec look' res i =
+     try
+       let section = sections.(i) in
+       let res' = look_section res section in
+       look' res' (i + 1)
+     with
+     | _ -> res
+   in
+   look' n 0 *)
+
+let look_table n sections =
+  let res = ref n in
+  let _ =
+    for i = 0 to Array.length sections - 1 do
+      let section = sections.(i) in
+      res := look_section !res section
+    done
+  in
+  !res

@@ -2,7 +2,7 @@
  (name main)
  (public_name seeds)
  (modules main)
- (libraries core fun regex str seeds))
+ (libraries core fun regex str seeds seeds_fun))
 
 (library
  (name seeds)
@@ -12,9 +12,24 @@
   (pps ppx_deriving.show)))
 
 (library
+ (name seeds_fun)
+ (modules seeds_fun)
+ (libraries core fun regex str)
+ (preprocess
+  (pps ppx_deriving.show)))
+
+(library
  (name seeds_test)
  (modules seeds_test)
  (libraries seeds)
+ (inline_tests)
+ (preprocess
+  (pps ppx_deriving.show ppx_expect ppx_inline_test)))
+
+(library
+ (name seeds_fun_test)
+ (modules seeds_fun_test)
+ (libraries seeds_fun)
  (inline_tests)
  (preprocess
   (pps ppx_deriving.show ppx_expect ppx_inline_test)))

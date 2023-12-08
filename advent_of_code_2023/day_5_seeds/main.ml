@@ -1,5 +1,5 @@
 open Fun
-open Seeds
+open Seeds_fun
 
 let _ =
   "seeds_sample.txt"
