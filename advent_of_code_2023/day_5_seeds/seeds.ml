@@ -83,9 +83,12 @@ let look_table n sections =
 
 let look_seed_range sections (seed, offset) =
   let res = ref max_int in
+  let start = seed
+  and end' = seed + offset in
   let _ =
-    for n = seed to seed + offset do
+    for n = start to end' do
       let r = look_table n sections in
+      print_endline (Format.sprintf "%d -> %d" n r);
       if r < !res then res := r
     done
   in
@@ -97,10 +100,10 @@ let look_seed_ranges (sections, seed_ranges) =
     for i = 0 to Array.length seed_ranges - 1 do
       let seed_range = seed_ranges.(i) in
       let start, end' = seed_range in
-      Format.sprintf "$ %d \n" start |> print_endline;
+      print_endline (Format.sprintf "$ %d \n" start);
       let r = look_seed_range sections seed_range in
       if r < !res then res := r;
-      Format.sprintf "# %d -> %d -> %d\n" start end' r |> print_endline
+      print_endline (Format.sprintf "# %d -> %d -> %d\n" start end' r)
     done
   in
   !res
