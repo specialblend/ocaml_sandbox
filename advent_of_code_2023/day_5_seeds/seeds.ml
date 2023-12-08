@@ -93,13 +93,14 @@ let look_seed_range sections (seed, offset) =
 
 let look_seed_ranges (sections, seed_ranges) =
   let res = ref max_int in
-
-  for i = 0 to Array.length seed_ranges - 1 do
-    let seed_range = seed_ranges.(i) in
-    let start, end' = seed_range in
-    Format.sprintf "$ %d \n" start |> print_endline;
-    let r = look_seed_range sections seed_range in
-    if r < !res then res := r;
-    Format.sprintf "# %d -> %d -> %d\n" start end' r |> print_endline
-  done;
+  let _ =
+    for i = 0 to Array.length seed_ranges - 1 do
+      let seed_range = seed_ranges.(i) in
+      let start, end' = seed_range in
+      Format.sprintf "$ %d \n" start |> print_endline;
+      let r = look_seed_range sections seed_range in
+      if r < !res then res := r;
+      Format.sprintf "# %d -> %d -> %d\n" start end' r |> print_endline
+    done
+  in
   !res
