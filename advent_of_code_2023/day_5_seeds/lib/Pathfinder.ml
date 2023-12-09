@@ -115,10 +115,13 @@ let compile_known_seeds table =
   let compile_seed seed =
     table
     |>| compile_paths
-    |>| List.filter_map (fun path ->
-            let d = Path.domain path in
-            match Range.intersect d seed with
-            | None -> None
-            | Some intersect -> Some (intersect, path))
+    |>| List.filter_map
+          begin
+            fun path ->
+              let d = Path.domain path in
+              match Range.intersect d seed with
+              | Some (Subset (_, _) as intersect) -> Some (intersect, path)
+              | _ -> None
+          end
   in
   List.map compile_seed

@@ -97,8 +97,7 @@ let%expect_test "compile_known_seeds" =
   let known_seeds = compile_known_seeds table seeds in
   print_endline (show_known_seeds known_seeds);
   [%expect {|
-    [[((Range.Superset (41218238, 421491713)),
-       { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 })];
+    [[];
       [((Range.Subset (481818804, 233571979)),
         { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 })
         ];
