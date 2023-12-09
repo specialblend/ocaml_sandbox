@@ -9,8 +9,11 @@ let rec chunk_pairs = function
   | x :: y :: rest -> (x, y) :: chunk_pairs rest
   | _ -> []
 
-let parse_seeds =
-  List.concat_map (List.filter_map int_of_string_opt) >> chunk_pairs
+let parse_seeds rows =
+  rows
+  |>| List.concat_map (List.filter_map int_of_string_opt)
+  |>| chunk_pairs
+  |>| List.sort compare
 
 let parse_triple = function
   | [ dst; src; range ] -> Some (dst, src, range)
