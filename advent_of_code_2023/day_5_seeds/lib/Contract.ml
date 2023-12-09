@@ -1,0 +1,5 @@
+type seed = int * int [@@deriving show]
+type row = int * int * int [@@deriving show]
+type map = row list [@@deriving show]
+type table = map list [@@deriving show]
+type almanac = seed list * table [@@deriving show]
