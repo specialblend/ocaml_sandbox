@@ -2,19 +2,19 @@ open Fun
 open Seeds
 open Seeds.Pathfinder
 
-let%expect_test "compile_table sample" =
+let%expect_test "compile_paths sample" =
   Parser_test.seeds_sample_text
   |>| Parser.parse_almanac
   |>| snd
-  |>| Pathfinder.compile_table
+  |>| Pathfinder.compile_paths
   |>| List.iter (Path.show >> print_endline);
   [%expect {| |}]
 
-let%expect_test "compile_table seeds" =
+let%expect_test "compile_paths seeds" =
   Parser_test.seeds_text
   |>| Parser.parse_almanac
   |>| snd
-  |>| Pathfinder.compile_table
+  |>| Pathfinder.compile_paths
   |>| List.iter (Path.show >> print_endline);
   [%expect
     {|
@@ -65,7 +65,7 @@ let%test "compiled sample table is correct" =
   Parser_test.seeds_sample_text
   |>| Parser.parse_almanac
   |>| snd
-  |>| Pathfinder.compile_table
+  |>| Pathfinder.compile_paths
   |>| List.for_all (fun path ->
           let Path.{ domain; offset } = path in
           let seeds = Range.to_list domain in
@@ -80,7 +80,7 @@ let%test "compiled seed table is correct" =
   Parser_test.seeds_text
   |>| Parser.parse_almanac
   |>| snd
-  |>| Pathfinder.compile_table
+  |>| Pathfinder.compile_paths
   |>| List.for_all (fun path ->
           let Path.{ domain; offset } = path in
           let x, z = domain in

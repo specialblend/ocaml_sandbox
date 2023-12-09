@@ -93,7 +93,7 @@ let fix_window path =
   let Path.{ domain = left, right; _ } = path in
   Path.{ path with domain = (left + 1, right) }
 
-let compile_table =
+let compile_paths =
   let scan table header =
     let cursor = compile_header header in
     match fold_table (Some cursor) table with
