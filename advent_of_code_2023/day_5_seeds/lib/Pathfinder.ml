@@ -39,22 +39,23 @@ let use_subset (path, range) row _ =
 
 let fold_table init_result init_table =
   let rec fold (result, table) =
+    let scan_rows prev_result rows table_rest =
+      let _, range = prev_result in
+      match List.find_opt (row_intersects range) rows with
+      | Some row -> begin
+          let a, b = range_of row in
+          let next_result =
+            match Range.intersect (a, b) range with
+            | Some (Subset (x, y)) -> use_subset prev_result row (x, y)
+            | Some (Overlap (x, y)) -> use_overlap prev_result row (x, y)
+            | _ -> None
+          in
+          fold (next_result, table_rest)
+        end
+      | None -> None
+    in
     match (result, table) with
-    | Some prev_result, rows :: table_rest -> begin
-        let _, range = prev_result in
-        match List.find_opt (row_intersects range) rows with
-        | Some row -> begin
-            let a, b = range_of row in
-            let next_result =
-              match Range.intersect (a, b) range with
-              | Some (Subset (x, y)) -> use_subset prev_result row (x, y)
-              | Some (Overlap (x, y)) -> use_overlap prev_result row (x, y)
-              | _ -> None
-            in
-            fold (next_result, table_rest)
-          end
-        | None -> None
-      end
+    | Some prev, rows :: table_rest -> scan_rows prev rows table_rest
     | _ -> result
   in
   fold (init_result, init_table)
