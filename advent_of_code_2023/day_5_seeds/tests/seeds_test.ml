@@ -280,8 +280,8 @@ humidity-to-location map:
 
   let%expect_test "parse_all" =
     seeds_sample_text
-    |>| Seeds_fun.parse_almanac
-    |>| Seeds_fun.show_almanac
+    |>| Seeds.parse_almanac
+    |>| Seeds.show_almanac
     |>| print_endline;
     [%expect
       {|
@@ -295,28 +295,28 @@ humidity-to-location map:
     let seed = 79 in
     let mappings = [ (50, 98, 2); (52, 50, 48) ] in
 
-    Seeds_fun.look_row seed mappings |> print_int;
+    Seeds.look_row seed mappings |> print_int;
     [%expect {| 81 |}]
 
   let%expect_test "look_row when not exists" =
     let seed = 14 in
     let mappings = [ (50, 98, 2); (52, 50, 48) ] in
 
-    Seeds_fun.look_row seed mappings |> print_int;
+    Seeds.look_row seed mappings |> print_int;
     [%expect {| 14 |}]
 
   let%expect_test "look_table 14" =
     let seed = 14 in
-    let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
+    let _, sections = Seeds.parse_almanac seeds_sample_text in
 
-    Seeds_fun.look_table seed sections |> print_int;
+    Seeds.look_table seed sections |> print_int;
     [%expect {| 43 |}]
 
   let%expect_test "map seeds to final numbers" =
     let seeds = [ 79; 14; 55; 13 ] in
-    let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
+    let _, sections = Seeds.parse_almanac seeds_sample_text in
 
-    List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
+    List.map (fun seed -> Seeds.look_table seed sections) seeds
     |> List.map string_of_int
     |> String.concat " "
     |> print_endline;
@@ -324,9 +324,9 @@ humidity-to-location map:
 
   let%expect_test "look_min" =
     let seeds = [ 79; 14; 55; 13 ] in
-    let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
+    let _, sections = Seeds.parse_almanac seeds_sample_text in
 
-    Seeds_fun.look_min (seeds, sections) |> string_of_int |> print_endline;
+    Seeds.look_min (seeds, sections) |> string_of_int |> print_endline;
     [%expect {| 35 |}]
 end
 
@@ -335,7 +335,7 @@ module Range_test = struct
     let range1 = (1, 10) in
     let range2 = (3, 5) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | Some (Subset (3, 5)) -> true
     | _ -> false
 
@@ -343,7 +343,7 @@ module Range_test = struct
     let range1 = (1, 10) in
     let range2 = (1, 10) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | Some (Subset (1, 10)) -> true
     | _ -> false
 
@@ -351,7 +351,7 @@ module Range_test = struct
     let range1 = (3, 5) in
     let range2 = (1, 10) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | Some (Superset (1, 10)) -> true
     | _ -> false
 
@@ -359,7 +359,7 @@ module Range_test = struct
     let range1 = (1, 10) in
     let range2 = (4, 12) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | Some (Overlap (4, 10)) -> true
     | _ -> false
 
@@ -367,7 +367,7 @@ module Range_test = struct
     let range1 = (5, 13) in
     let range2 = (2, 7) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | Some (Overlap (5, 7)) -> true
     | _ -> false
 
@@ -375,7 +375,7 @@ module Range_test = struct
     let range1 = (1, 13) in
     let range2 = (21, 47) in
 
-    match Seeds_fun.Range.intersect range1 range2 with
+    match Seeds.Range.intersect range1 range2 with
     | None -> true
     | _ -> false
 end
@@ -384,162 +384,155 @@ module Path_test = struct
   let%expect_test "compile_header_row sample" =
     let header = (50, 98, 2) in
     Parse_test.seeds_sample_text
-    |>| Seeds_fun.parse_almanac
+    |>| Seeds.parse_almanac
     |>| snd
     |>| function
     | _ :: table ->
-        Seeds_fun.Path.compile_header_row table header
-        |>| Option.map Seeds_fun.Path.show
+        Seeds.Path.compile_header_row table header
+        |>| Option.map Seeds.Path.show
         |>| Option.map print_endline
         |>| ignore;
-        [%expect {| { Seeds_fun.Path.window = (98, 98); offset = -31 } |}]
+        [%expect {| { Seeds.Path.window = (98, 98); offset = -31 } |}]
     | _ -> failwith "no table"
 
-  (* let%expect_test "compile_header_row seeds" =
-     let header = (1903578414, 0, 20266514) in
-     Parse_test.seeds_text
-     |>| Seeds_fun.parse_almanac
-     |>| snd
-     |>| function
-     | _ :: table ->
-         Seeds_fun.Path.compile_header_row table header
-         |>| Option.map Seeds_fun.Path.show
-         |>| Option.map print_endline
-         |>| ignore;
-         [%expect
-           {|
-           (1389477588, 1222450723, 86190269) 167026865
-           (3571148005, 1406027225, 274387169) 2165120780
-           (2957650252, 3344814844, 485117407) -387164592
-           (1728905119, 3103698534, 293254009) -1374793415
-           (2209375810, 1796186950, 115491030) 413188860
-           (2739690951, 1959797890, 363550956) 779893061
-           (614836670, 2866104927, 345897505) -2251268257
-           { Seeds_fun.Path.window = (1239000360, 1308640991); offset = -487996698 } |}]
-     | _ -> failwith "no table" *)
+  let%expect_test "compile_header_row seeds" =
+    let header = (1903578414, 0, 20266514) in
+    Parse_test.seeds_text
+    |>| Seeds.parse_almanac
+    |>| snd
+    |>| function
+    | _ :: table ->
+        Seeds.Path.compile_header_row table header
+        |>| Option.map Seeds.Path.show
+        |>| Option.map print_endline
+        |>| ignore;
+        [%expect
+          {|
+           { Seeds.Path.window = (0, 20266513); offset = 1545059330 } |}]
+    | _ -> failwith "no table"
 
   let%expect_test "compile_table sample" =
     Parse_test.seeds_sample_text
-    |>| Seeds_fun.parse_almanac
+    |>| Seeds.parse_almanac
     |>| snd
-    |>| Seeds_fun.Path.compile_table
-    |>| Seeds_fun.Path.show_paths
+    |>| Seeds.Path.compile_table
+    |>| Seeds.Path.show_paths
     |>| print_endline;
-    [%expect {| [{ Seeds_fun.Path.window = (98, 98); offset = -31 }] |}]
+    [%expect {| [{ Seeds.Path.window = (98, 98); offset = -31 }] |}]
 
   let%expect_test "compile_table seeds" =
     Parse_test.seeds_text
-    |>| Seeds_fun.parse_almanac
+    |>| Seeds.parse_almanac
     |>| snd
-    |>| Seeds_fun.Path.compile_table
-    |>| Seeds_fun.Path.show_paths
+    |>| Seeds.Path.compile_table
+    |>| Seeds.Path.show_paths
     |>| print_endline;
     [%expect
       {|
-      [{ Seeds_fun.Path.window = (1239000360, 1308640991); offset = -487996698 };
-        { Seeds_fun.Path.window = (3429737174, 3434135476); offset = -1565516394 };
-        { Seeds_fun.Path.window = (1535118372, 1545830629); offset = 415864339 };
-        { Seeds_fun.Path.window = (438168826, 446641972); offset = 2377399210 };
-        { Seeds_fun.Path.window = (536917987, 544654657); offset = 316619784 };
-        { Seeds_fun.Path.window = (3429676494, 3429737173); offset = -384049208 };
-        { Seeds_fun.Path.window = (979257605, 990438940); offset = 1318336963 };
-        { Seeds_fun.Path.window = (3401349677, 3404859217); offset = -1031482541 };
-        { Seeds_fun.Path.window = (2086137846, 2088091502); offset = -847138651 };
-        { Seeds_fun.Path.window = (2683163217, 2692186170); offset = 1533326409 };
-        { Seeds_fun.Path.window = (1633120598, 1662888272); offset = -1331275069 };
-        { Seeds_fun.Path.window = (2940939059, 2946419136); offset = 104748907 };
-        { Seeds_fun.Path.window = (498356425, 515916487); offset = 573016119 };
-        { Seeds_fun.Path.window = (2711764761, 2724264424); offset = 1290124945 };
-        { Seeds_fun.Path.window = (2605613670, 2623158994); offset = -2420710039 };
-        { Seeds_fun.Path.window = (4294380836, 4294967295); offset = -308853639 };
-        { Seeds_fun.Path.window = (3169731719, 3170733408); offset = -2810516698 };
-        { Seeds_fun.Path.window = (1124514126, 1129263946); offset = 1436858815 };
-        { Seeds_fun.Path.window = (773812762, 835303388); offset = 3316722590 };
-        { Seeds_fun.Path.window = (20266514, 26921881); offset = 1306626526 };
-        { Seeds_fun.Path.window = (1808537666, 1814135908); offset = 2276399443 };
-        { Seeds_fun.Path.window = (130988760, 144724434); offset = 1523978333 };
-        { Seeds_fun.Path.window = (1098613331, 1114497264); offset = 2634856385 };
-        { Seeds_fun.Path.window = (858089779, 873640810); offset = 2695959987 };
-        { Seeds_fun.Path.window = (2361908616, 2383690007); offset = -1747071946 };
-        { Seeds_fun.Path.window = (4237225295, 4240432415); offset = -251111638 };
-        { Seeds_fun.Path.window = (2253415952, 2269053206); offset = -2050966996 };
-        { Seeds_fun.Path.window = (3832436687, 3847103899); offset = -1963817604 };
-        { Seeds_fun.Path.window = (650502764, 657139062); offset = 2129081357 };
-        { Seeds_fun.Path.window = (3970575741, 3995948346); offset = -3752489530 };
-        { Seeds_fun.Path.window = (2568591486, 2604369519); offset = -1223292607 };
-        { Seeds_fun.Path.window = (768686733, 773812761); offset = 2341509609 };
-        { Seeds_fun.Path.window = (0, 20266513); offset = 1545059330 };
-        { Seeds_fun.Path.window = (3180154163, 3192666657); offset = -1795533993 };
-        { Seeds_fun.Path.window = (2776195129, 2779175480); offset = -409308345 };
-        { Seeds_fun.Path.window = (1548974917, 1557270806); offset = -215426509 };
-        { Seeds_fun.Path.window = (4119971124, 4145767629); offset = -2848556938 };
-        { Seeds_fun.Path.window = (929849138, 957158779); offset = 3127778329 };
-        { Seeds_fun.Path.window = (2667969937, 2681059372); offset = -1427017085 };
-        { Seeds_fun.Path.window = (1816346942, 1895435163); offset = 797624495 };
-        { Seeds_fun.Path.window = (2383690008, 2416384373); offset = 959744588 }] |}]
+      [{ Seeds.Path.window = (1239000360, 1308640991); offset = -487996698 };
+        { Seeds.Path.window = (3429737174, 3434135476); offset = -1565516394 };
+        { Seeds.Path.window = (1535118372, 1545830629); offset = 415864339 };
+        { Seeds.Path.window = (438168826, 446641972); offset = 2377399210 };
+        { Seeds.Path.window = (536917987, 544654657); offset = 316619784 };
+        { Seeds.Path.window = (3429676494, 3429737173); offset = -384049208 };
+        { Seeds.Path.window = (979257605, 990438940); offset = 1318336963 };
+        { Seeds.Path.window = (3401349677, 3404859217); offset = -1031482541 };
+        { Seeds.Path.window = (2086137846, 2088091502); offset = -847138651 };
+        { Seeds.Path.window = (2683163217, 2692186170); offset = 1533326409 };
+        { Seeds.Path.window = (1633120598, 1662888272); offset = -1331275069 };
+        { Seeds.Path.window = (2940939059, 2946419136); offset = 104748907 };
+        { Seeds.Path.window = (498356425, 515916487); offset = 573016119 };
+        { Seeds.Path.window = (2711764761, 2724264424); offset = 1290124945 };
+        { Seeds.Path.window = (2605613670, 2623158994); offset = -2420710039 };
+        { Seeds.Path.window = (4294380836, 4294967295); offset = -308853639 };
+        { Seeds.Path.window = (3169731719, 3170733408); offset = -2810516698 };
+        { Seeds.Path.window = (1124514126, 1129263946); offset = 1436858815 };
+        { Seeds.Path.window = (773812762, 835303388); offset = 3316722590 };
+        { Seeds.Path.window = (20266514, 26921881); offset = 1306626526 };
+        { Seeds.Path.window = (1808537666, 1814135908); offset = 2276399443 };
+        { Seeds.Path.window = (130988760, 144724434); offset = 1523978333 };
+        { Seeds.Path.window = (1098613331, 1114497264); offset = 2634856385 };
+        { Seeds.Path.window = (858089779, 873640810); offset = 2695959987 };
+        { Seeds.Path.window = (2361908616, 2383690007); offset = -1747071946 };
+        { Seeds.Path.window = (4237225295, 4240432415); offset = -251111638 };
+        { Seeds.Path.window = (2253415952, 2269053206); offset = -2050966996 };
+        { Seeds.Path.window = (3832436687, 3847103899); offset = -1963817604 };
+        { Seeds.Path.window = (650502764, 657139062); offset = 2129081357 };
+        { Seeds.Path.window = (3970575741, 3995948346); offset = -3752489530 };
+        { Seeds.Path.window = (2568591486, 2604369519); offset = -1223292607 };
+        { Seeds.Path.window = (768686733, 773812761); offset = 2341509609 };
+        { Seeds.Path.window = (0, 20266513); offset = 1545059330 };
+        { Seeds.Path.window = (3180154163, 3192666657); offset = -1795533993 };
+        { Seeds.Path.window = (2776195129, 2779175480); offset = -409308345 };
+        { Seeds.Path.window = (1548974917, 1557270806); offset = -215426509 };
+        { Seeds.Path.window = (4119971124, 4145767629); offset = -2848556938 };
+        { Seeds.Path.window = (929849138, 957158779); offset = 3127778329 };
+        { Seeds.Path.window = (2667969937, 2681059372); offset = -1427017085 };
+        { Seeds.Path.window = (1816346942, 1895435163); offset = 797624495 };
+        { Seeds.Path.window = (2383690008, 2416384373); offset = 959744588 }] |}]
 
   let%test "compiled sample table is correct" =
-    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
+    let _, sections = Seeds.parse_almanac Parse_test.seeds_sample_text in
     Parse_test.seeds_sample_text
-    |>| Seeds_fun.parse_almanac
+    |>| Seeds.parse_almanac
     |>| snd
-    |>| Seeds_fun.Path.compile_table
+    |>| Seeds.Path.compile_table
     |>| List.for_all (fun path ->
-            let Seeds_fun.Path.{ window; offset } = path in
-            let seeds = Seeds_fun.Range.to_list window in
+            let Seeds.Path.{ window; offset } = path in
+            let seeds = Seeds.Range.to_list window in
             let expected =
-              List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
+              List.map (fun seed -> Seeds.look_table seed sections) seeds
             in
             let results = List.map (fun seed -> seed + offset) seeds in
             expected = results)
 
   let%test "compiled seed table is correct" =
-    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_text in
+    let _, sections = Seeds.parse_almanac Parse_test.seeds_text in
     Parse_test.seeds_text
-    |>| Seeds_fun.parse_almanac
+    |>| Seeds.parse_almanac
     |>| snd
-    |>| Seeds_fun.Path.compile_table
+    |>| Seeds.Path.compile_table
     |>| List.for_all (fun path ->
-            let Seeds_fun.Path.{ window; offset } = path in
+            let Seeds.Path.{ window; offset } = path in
             let x, z = window in
             let seeds = [ x + 1; x + 2; z ] in
             let expected =
-              List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
+              List.map (fun seed -> Seeds.look_table seed sections) seeds
             in
             let results = List.map (fun seed -> seed + offset) seeds in
             expected = results)
   (*
      let%expect_test "compiled seed table is correct" =
-       let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
+       let _, sections = Seeds.parse_almanac Parse_test.seeds_sample_text in
        Parse_test.seeds_text
-       |>| Seeds_fun.parse_almanac
+       |>| Seeds.parse_almanac
        |>| snd
-       |>| Seeds_fun.Path.compile_table
+       |>| Seeds.Path.compile_table
        |>| List.iter (fun path ->
-               let Seeds_fun.Path.{ window; offset } = path in
+               let Seeds.Path.{ window; offset } = path in
                let x, _ = window in
                let seeds = [ x ] in
                List.iter
                  (fun seed ->
-                   let left = Seeds_fun.look_table seed sections
+                   let left = Seeds.look_table seed sections
                    and right = seed + offset in
                    print_endline (Format.sprintf "%d -> %d = %d ?" seed left right))
                  seeds);
        [%expect {||}] *)
   (*
      let%expect_test "compiled seed table" =
-       let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_text in
+       let _, sections = Seeds.parse_almanac Parse_test.seeds_text in
        Parse_test.seeds_text
-       |>| Seeds_fun.parse_almanac
+       |>| Seeds.parse_almanac
        |>| snd
-       |>| Seeds_fun.Path.compile_table
+       |>| Seeds.Path.compile_table
        |>| List.iter (fun path ->
-               let Seeds_fun.Path.{ window; offset } = path in
+               let Seeds.Path.{ window; offset } = path in
                let x, _y = window in
                let seeds = [ x + 1 ] in
                List.iter
                  (fun seed ->
-                   let left = Seeds_fun.look_table seed sections
+                   let left = Seeds.look_table seed sections
                    and right = seed + offset in
                    print_endline (Format.sprintf "%d -> %d = %d ?" seed left right))
                  seeds);

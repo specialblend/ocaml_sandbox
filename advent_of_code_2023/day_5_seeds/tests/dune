@@ -1,0 +1,6 @@
+(library
+ (name seeds_tests)
+ (libraries seeds)
+ (inline_tests)
+ (preprocess
+  (pps ppx_deriving.show ppx_expect ppx_inline_test)))

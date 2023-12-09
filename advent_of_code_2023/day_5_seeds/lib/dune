@@ -1,0 +1,5 @@
+(library
+ (name seeds)
+ (libraries core fun regex str)
+ (preprocess
+  (pps ppx_deriving.show)))
