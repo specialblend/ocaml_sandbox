@@ -82,7 +82,7 @@ let%expect_test "map seeds to final numbers" =
   |> print_endline;
   [%expect {| 82 43 86 35 |}]
 
-let%expect_test "get smallest final number" =
+let%expect_test "look_min" =
   let seeds = [ 79; 14; 55; 13 ] in
   let _, sections = Seeds_fun.parse_all seeds_sample_text in
 
