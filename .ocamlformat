@@ -11,3 +11,4 @@ let-and = sparse
 let-binding-spacing = compact
 nested-match = align
 type-decl = sparse
+exp-grouping = preserve
