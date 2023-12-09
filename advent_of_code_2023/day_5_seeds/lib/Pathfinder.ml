@@ -60,17 +60,22 @@ let rec fold_table_into result table =
       |>| fun row -> Option.bind row fold_row
   | _ -> result
 
-let compile_header table header =
+let compile_header header =
   let dst, src, margin = header in
   let window = (src, src + margin - 1) in
   let offset = dst - src in
   let range = Range.add offset window in
   let path = { window; offset } in
   let result = (path, range) in
-  match table |> fold_table_into (Some result) with
-  | Some (path, _) -> Some path
-  | None -> None
+  result
 
 let compile_table : table -> t list = function
-  | init :: table -> List.filter_map (compile_header table) init
+  | init :: table ->
+      List.filter_map
+        (fun header ->
+          let result = compile_header header in
+          match table |> fold_table_into (Some result) with
+          | Some (path, _) -> Some path
+          | None -> None)
+        init
   | _ -> failwith "illegal"

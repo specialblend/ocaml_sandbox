@@ -1,33 +1,6 @@
 open Fun
 open Seeds
 
-let%expect_test "compile_header sample" =
-  let header = (50, 98, 2) in
-  Parser_test.seeds_sample_text
-  |>| Parser.parse_almanac
-  |>| snd
-  |>| function
-  | _ :: table ->
-      Pathfinder.compile_header table header
-      |>| Option.map Pathfinder.show
-      |>| Option.map print_endline
-      |>| ignore;
-      [%expect {| { Pathfinder.window = (98, 98); offset = -31 } |}]
-  | _ -> failwith "no table"
-
-let%expect_test "compile_header seeds" =
-  let header = (1903578414, 0, 20266514) in
-  Parser_test.seeds_text
-  |>| Parser.parse_almanac
-  |>| snd
-  |>| function
-  | _ :: table ->
-      Pathfinder.compile_header table header
-      |>| Option.map (Pathfinder.show >> print_endline)
-      |>| ignore;
-      [%expect {| { Pathfinder.window = (0, 20266513); offset = 1545059330 } |}]
-  | _ -> failwith "no table"
-
 let%expect_test "compile_table sample" =
   Parser_test.seeds_sample_text
   |>| Parser.parse_almanac
@@ -42,7 +15,8 @@ let%expect_test "compile_table seeds" =
   |>| snd
   |>| Pathfinder.compile_table
   |>| List.iter (Pathfinder.show >> print_endline);
-  [%expect {|
+  [%expect
+    {|
     { Pathfinder.window = (1239000360, 1308640991); offset = -487996698 }
     { Pathfinder.window = (3429737174, 3434135476); offset = -1565516394 }
     { Pathfinder.window = (1535118372, 1545830629); offset = 415864339 }
