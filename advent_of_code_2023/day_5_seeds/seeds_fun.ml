@@ -38,7 +38,7 @@ let parse_almanac text : almanac =
   | _ -> failwith "illegal"
 
 module Range = struct
-  type t = int * int
+  type t = int * int [@@deriving show]
 
   type intersect =
     | Subset of int * int
@@ -55,55 +55,58 @@ module Range = struct
   let add n (a, b) = (a + n, b + n)
 end
 
-type path = {
-  window: Range.t;
-  offset: int;
-}
+module Path = struct
+  type t = {
+    window: Range.t;
+    offset: int;
+  }
+  [@@deriving show]
 
-let range_of (_, src, margin) = (src, src + margin - 1)
+  let range_of (_, src, margin) = (src, src + margin - 1)
 
-let row_intersects range row =
-  match Range.intersect range (range_of row) with
-  | Some (Subset (_, _)) -> true
-  | Some (Overlap (_, _)) -> true
-  | _ -> false
+  let row_intersects range row =
+    match Range.intersect range (range_of row) with
+    | Some (Subset (_, _)) -> true
+    | Some (Overlap (_, _)) -> true
+    | _ -> false
 
-let compile_rows result rows =
-  let path, range = result in
-  match rows |> List.find_opt (row_intersects range) with
-  | None -> result
-  | Some row ->
-  match Range.intersect range (range_of row) with
-  | Some (Subset _) ->
-      let dst, src, _ = row in
-      let offset = dst - src in
-      let path = { path with offset = path.offset + offset } in
-      (path, Range.add offset range)
-  | Some (Overlap (x, y)) ->
-      let a, b = range in
-      let d_left = x - a in
-      let d_right = b - y in
-      let a', b' = path.window in
-      let window = (a' + d_left, b' - d_right) in
-      let dst, src, _ = row in
-      let offset = dst - src in
-      let path = { window; offset } in
-      let range = (x, y) in
-      (path, Range.add offset range)
-  | _ -> result
+  let compile_rows result rows =
+    let path, range = result in
+    match rows |> List.find_opt (row_intersects range) with
+    | None -> result
+    | Some row ->
+    match Range.intersect range (range_of row) with
+    | Some (Subset _) ->
+        let dst, src, _ = row in
+        let offset = dst - src in
+        let path = { path with offset = path.offset + offset } in
+        (path, Range.add offset range)
+    | Some (Overlap (x, y)) ->
+        let a, b = range in
+        let d_left = x - a in
+        let d_right = b - y in
+        let a', b' = path.window in
+        let window = (a' + d_left, b' - d_right) in
+        let dst, src, _ = row in
+        let offset = dst - src in
+        let path = { window; offset } in
+        let range = (x, y) in
+        (path, Range.add offset range)
+    | _ -> result
 
-let compile_header_row table row =
-  let dst, src, margin = row in
-  let window = (src, src + margin - 1) in
-  let offset = dst - src in
-  let path = { window; offset } in
-  let init = (path, window) in
-  let path, _ = List.fold_left compile_rows init table in
-  path
+  let compile_header_row table row =
+    let dst, src, margin = row in
+    let window = (src, src + margin - 1) in
+    let offset = dst - src in
+    let path = { window; offset } in
+    let init = (path, window) in
+    let path, _ = List.fold_left compile_rows init table in
+    path
 
-let compile_table : table -> path list = function
-  | init :: table -> List.map (compile_header_row table) init
-  | _ -> failwith "illegal"
+  let compile_table : table -> t list = function
+    | init :: table -> List.map (compile_header_row table) init
+    | _ -> failwith "illegal"
+end
 
 let look_row n row =
   let look n col =
