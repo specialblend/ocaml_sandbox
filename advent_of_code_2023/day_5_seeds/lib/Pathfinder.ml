@@ -82,8 +82,7 @@ let compile_table : table -> t list =
   let fix_window path =
     (* idk why but left needs incremented by 1 *)
     let left, right = path.window in
-    let window = (succ left, right) in
-    { path with window }
+    { path with window = (left + 1, right) }
   in
   function
   | headers :: table ->
