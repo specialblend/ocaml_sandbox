@@ -41,7 +41,7 @@ humidity-to-location map:
 let%expect_test "parse_all" =
   seeds_sample_text
   |>| Seeds_fun.parse_all
-  |>| Seeds_fun.show_seed_data
+  |>| Seeds_fun.show_table
   |>| print_endline;
   [%expect
     {|

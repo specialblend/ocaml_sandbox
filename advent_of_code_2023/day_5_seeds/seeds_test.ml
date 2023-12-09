@@ -41,15 +41,15 @@ humidity-to-location map:
 let%expect_test "parse seeds" =
   let table = Seeds.parse_all seeds_sample_text in
 
-  table |> Seeds.show_table |> print_endline;
+  table |> Seeds.show_seed_map |> print_endline;
   [%expect
     {|
-    ([|79; 14; 55; 13|],
-     [|[|(50, 98, 2); (52, 50, 48)|]; [|(0, 15, 37); (37, 52, 2); (39, 0, 15)|];
+    ([|[|(50, 98, 2); (52, 50, 48)|]; [|(0, 15, 37); (37, 52, 2); (39, 0, 15)|];
        [|(49, 53, 8); (0, 11, 42); (42, 0, 7); (57, 7, 4)|];
        [|(88, 18, 7); (18, 25, 70)|];
        [|(45, 77, 23); (81, 45, 19); (68, 64, 13)|]; [|(0, 69, 1); (1, 0, 69)|];
-       [|(60, 56, 37); (56, 93, 4)|]|]) |}]
+       [|(60, 56, 37); (56, 93, 4)|]|],
+     [|(79, 14); (55, 13)|]) |}]
 
 let%expect_test "look_section when exists" =
   let seed = 79 in

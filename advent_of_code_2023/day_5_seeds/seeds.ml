@@ -4,7 +4,11 @@ let _NUM = Str.regexp "[0-9]+"
 and _EOL = Str.regexp "\n"
 and _EOL2 = Str.regexp "\n\n"
 
-type table = (int * int * int) array array * (int * int) array [@@deriving show]
+type seed_range = int * int [@@deriving show]
+type seed_col = int * int * int [@@deriving show]
+type seed_row = seed_col array [@@deriving show]
+type seed_table = seed_row array [@@deriving show]
+type seed_map = seed_table * seed_range array [@@deriving show]
 
 let rec chunk_pairs = function
   | x :: y :: rest -> (x, y) :: chunk_pairs rest
@@ -31,7 +35,7 @@ let parse_sect sect =
   |>| List.map (Regex.find_all _NUM >> List.rev)
   |>| List.filter (fun x -> List.length x > 0)
 
-let parse_all text =
+let parse_all text : seed_map =
   Str.split _EOL2 text
   |>| List.map parse_sect
   |>| function

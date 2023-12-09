@@ -9,7 +9,7 @@ type seed = int [@@deriving show]
 type seeds = seed list [@@deriving show]
 type section = mapping list [@@deriving show]
 type sections = section list [@@deriving show]
-type seed_data = seeds * sections [@@deriving show]
+type table = seeds * sections [@@deriving show]
 
 let parse_seeds = List.concat_map (List.filter_map int_of_string_opt)
 
