@@ -76,6 +76,19 @@ let compile_table : table -> t list =
     | Some (path, _) -> Some path
     | None -> None
   in
+  let is_singleton = function
+    | { window = a, b; _ } -> a = b
+  in
+  let fix_window path =
+    (* idk why but left needs incremented by 1 *)
+    let left, right = path.window in
+    let window = (succ left, right) in
+    { path with window }
+  in
   function
-  | init :: table -> List.filter_map (use_header table) init
+  | headers :: table ->
+      headers
+      |>| List.filter_map (use_header table)
+      |>| List.filter (fun path -> not (is_singleton path))
+      |>| List.map fix_window
   | _ -> failwith "illegal"
