@@ -12,7 +12,7 @@ module Path = struct
     range: Range.t;
   }
 
-  let use_overlap { path; range } row (x, y) =
+  let use_overlap (x, y) { path; range } row =
     let a, b = range in
     let d_left = x - a in
     let d_right = y - b in
@@ -23,15 +23,15 @@ module Path = struct
     let path = { window = window'; offset = path.offset + offset } in
     let range = Range.add offset (x, y) in
     let cursor = { path; range } in
-    Some cursor
+    cursor
 
-  let use_subset { path; range } row _ =
+  let use_subset _ { path; range } row =
     let dst, src, _ = row in
     let offset = dst - src in
     let path = { path with offset = path.offset + offset } in
     let range = Range.add offset range in
     let cursor = { path; range } in
-    Some cursor
+    cursor
 end
 
 let range_of (_, src, margin) = (src, src + margin - 1)
@@ -47,18 +47,23 @@ let fold_table init_cursor init_table =
   let rec fold (cursor, table) =
     let scan_rows prev rows table_rest =
       let Path.{ range; _ } = prev in
-      let match_row row =
-        let a, b = range_of row in
+      let move_cursor row =
+        let next_range = range_of row in
         let next_cursor =
-          match Range.intersect (a, b) range with
-          | Some (Subset (x, y)) -> Path.use_subset prev row (x, y)
-          | Some (Overlap (x, y)) -> Path.use_overlap prev row (x, y)
-          | _ -> None
+          let next_move =
+            match Range.intersect next_range range with
+            | Some (Subset (x, y)) -> Some (Path.use_subset (x, y))
+            | Some (Overlap (x, y)) -> Some (Path.use_overlap (x, y))
+            | _ -> None
+          in
+          match next_move with
+          | Some move -> Some (move prev row)
+          | None -> None
         in
         fold (next_cursor, table_rest)
       in
       match List.find_opt (row_intersects range) rows with
-      | Some row -> match_row row
+      | Some row -> move_cursor row
       | None -> None
     in
     match (cursor, table) with
