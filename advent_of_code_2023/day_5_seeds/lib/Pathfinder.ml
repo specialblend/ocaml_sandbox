@@ -44,33 +44,34 @@ let row_intersects range row =
   | _ -> false
 
 let fold_table init_cursor init_table =
-  let rec fold (cursor, table) =
-    let scan_rows prev rows table_rest =
+  let rec fold cursor table =
+    let move_cursor prev row =
       let Path.{ range; _ } = prev in
-      let move_cursor row =
-        let next_range = range_of row in
-        let next_cursor =
-          let next_move =
-            match Range.intersect next_range range with
-            | Some (Subset (x, y)) -> Some (Path.use_subset (x, y))
-            | Some (Overlap (x, y)) -> Some (Path.use_overlap (x, y))
-            | _ -> None
-          in
-          match next_move with
-          | Some move -> Some (move prev row)
-          | None -> None
+      let next_range = range_of row in
+      let next_cursor =
+        let next_move =
+          match Range.intersect next_range range with
+          | Some (Subset (x, y)) -> Some (Path.use_subset (x, y))
+          | Some (Overlap (x, y)) -> Some (Path.use_overlap (x, y))
+          | _ -> None
         in
-        fold (next_cursor, table_rest)
+        match next_move with
+        | Some move -> Some (move prev row)
+        | None -> None
       in
+      fold next_cursor
+    in
+    let scan_rows prev rows rest =
+      let Path.{ range; _ } = prev in
       match List.find_opt (row_intersects range) rows with
-      | Some row -> move_cursor row
+      | Some row -> move_cursor prev row rest
       | None -> None
     in
     match (cursor, table) with
     | Some prev, rows :: table_rest -> scan_rows prev rows table_rest
     | _ -> cursor
   in
-  fold (init_cursor, init_table)
+  fold init_cursor init_table
 
 let compile_header header =
   let dst, src, margin = header in
