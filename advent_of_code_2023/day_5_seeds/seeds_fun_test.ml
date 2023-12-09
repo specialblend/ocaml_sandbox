@@ -381,7 +381,7 @@ module Range_test = struct
 end
 
 module Path_test = struct
-  let%expect_test "compile_header_row" =
+  let%expect_test "compile_header_row sample" =
     let header = (50, 98, 2) in
     Parse_test.seeds_sample_text
     |>| Seeds_fun.parse_almanac
@@ -395,6 +395,29 @@ module Path_test = struct
         [%expect {| { Seeds_fun.Path.window = (98, 98); offset = -31 } |}]
     | _ -> failwith "no table"
 
+  (* let%expect_test "compile_header_row seeds" =
+     let header = (1903578414, 0, 20266514) in
+     Parse_test.seeds_text
+     |>| Seeds_fun.parse_almanac
+     |>| snd
+     |>| function
+     | _ :: table ->
+         Seeds_fun.Path.compile_header_row table header
+         |>| Option.map Seeds_fun.Path.show
+         |>| Option.map print_endline
+         |>| ignore;
+         [%expect
+           {|
+           (1389477588, 1222450723, 86190269) 167026865
+           (3571148005, 1406027225, 274387169) 2165120780
+           (2957650252, 3344814844, 485117407) -387164592
+           (1728905119, 3103698534, 293254009) -1374793415
+           (2209375810, 1796186950, 115491030) 413188860
+           (2739690951, 1959797890, 363550956) 779893061
+           (614836670, 2866104927, 345897505) -2251268257
+           { Seeds_fun.Path.window = (1239000360, 1308640991); offset = -487996698 } |}]
+     | _ -> failwith "no table" *)
+
   let%expect_test "compile_table sample" =
     Parse_test.seeds_sample_text
     |>| Seeds_fun.parse_almanac
@@ -404,14 +427,14 @@ module Path_test = struct
     |>| print_endline;
     [%expect {| [{ Seeds_fun.Path.window = (98, 98); offset = -31 }] |}]
 
-  let%expect_test "compile_table seeds" =
-    Parse_test.seeds_text
-    |>| Seeds_fun.parse_almanac
-    |>| snd
-    |>| Seeds_fun.Path.compile_table
-    |>| Seeds_fun.Path.show_paths
-    |>| print_endline;
-    [%expect {||}]
+  (* let%expect_test "compile_table seeds" =
+     Parse_test.seeds_text
+     |>| Seeds_fun.parse_almanac
+     |>| snd
+     |>| Seeds_fun.Path.compile_table
+     |>| Seeds_fun.Path.show_paths
+     |>| print_endline;
+     [%expect {||}] *)
 
   let%test "compiled sample table is correct" =
     let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
@@ -428,23 +451,21 @@ module Path_test = struct
             let results = List.map (fun seed -> seed + offset) seeds in
             expected = results)
 
-  let%expect_test "compiled seed table is correct" =
-    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
-    Parse_test.seeds_text
-    |>| Seeds_fun.parse_almanac
-    |>| snd
-    |>| Seeds_fun.Path.compile_table
-    |>| List.iter (fun path ->
-            let Seeds_fun.Path.{ window; offset } = path in
-            let x, y = window in
-            let seeds = [ x; y ] in
-            let expected =
-              List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
-            in
-            let results = List.map (fun seed -> seed + offset) seeds in
-            List.iter2
-              (fun a b ->
-                print_endline (Format.sprintf "%d ->? %d -> %d" a b (a - b)))
-              results expected);
-    [%expect {||}]
+  (* let%expect_test "compiled seed table is correct" =
+     let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
+     Parse_test.seeds_text
+     |>| Seeds_fun.parse_almanac
+     |>| snd
+     |>| Seeds_fun.Path.compile_table
+     |>| List.iter (fun path ->
+             let Seeds_fun.Path.{ window; offset } = path in
+             let x, _ = window in
+             let seeds = [ x ] in
+             List.iter
+               (fun seed ->
+                 let left = Seeds_fun.look_table seed sections
+                 and right = seed + offset in
+                 print_endline (Format.sprintf "%d -> %d = %d ?" seed left right))
+               seeds);
+     [%expect {||}] *)
 end

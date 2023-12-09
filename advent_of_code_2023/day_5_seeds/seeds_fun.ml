@@ -98,8 +98,8 @@ module Path = struct
                 let offset' = dst - src in
                 let path' = { path with offset = path.offset + offset' } in
                 let range' = Range.add offset' range in
-                let result = (path', range') in
-                fold_table (Some result) table
+                let result' = (path', range') in
+                fold_table (Some result') table
             | Some (Overlap (x, y)) ->
                 let a, b = range in
                 let d_left = x - a in
@@ -107,11 +107,11 @@ module Path = struct
                 let a', b' = path.window in
                 let window' = (a' + d_left, b' + d_right) in
                 let dst, src, _ = row in
-                let offset = dst - src in
+                let offset' = dst - src in
                 let path' =
-                  { window = window'; offset = path.offset + offset }
+                  { window = window'; offset = path.offset + offset' }
                 in
-                let range' = Range.add offset (x, y) in
+                let range' = Range.add offset' (x, y) in
                 let result' = (path', range') in
                 fold_table (Some result') table
             | _ -> None))
