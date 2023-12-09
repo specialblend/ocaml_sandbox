@@ -360,7 +360,7 @@ module Range_test = struct
     let range2 = (4, 12) in
 
     match Seeds_fun.Range.intersect range1 range2 with
-    | Some (OverlapRight (4, 10)) -> true
+    | Some (Overlap (4, 10)) -> true
     | _ -> false
 
   let%test "range intersect overlap left" =
@@ -368,7 +368,7 @@ module Range_test = struct
     let range2 = (2, 7) in
 
     match Seeds_fun.Range.intersect range1 range2 with
-    | Some (OverlapLeft (5, 7)) -> true
+    | Some (Overlap (5, 7)) -> true
     | _ -> false
 
   let%test "range intersect none" =
