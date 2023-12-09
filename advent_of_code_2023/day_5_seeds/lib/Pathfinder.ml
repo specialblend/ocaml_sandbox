@@ -7,9 +7,6 @@ type t = {
 }
 [@@deriving show]
 
-type paths = t list [@@deriving show]
-type result = t * Range.t [@@deriving show]
-
 let range_of (_, src, margin) = (src, src + margin - 1)
 
 let row_intersects range row =
