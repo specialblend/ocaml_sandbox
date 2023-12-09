@@ -20,14 +20,14 @@ let use_overlap (path, range) row (x, y) =
   let a, b = range in
   let d_left = x - a in
   let d_right = y - b in
-  let a', b' = path.window in
-  let window' = (a' + d_left, b' + d_right) in
+  let left, right = path.window in
+  let window' = (left + d_left, right + d_right) in
   let dst, src, _ = row in
-  let offset' = dst - src in
-  let path' = { window = window'; offset = path.offset + offset' } in
-  let range' = Range.add offset' (x, y) in
-  let result' = (path', range') in
-  Some result'
+  let offset = dst - src in
+  let path = { window = window'; offset = path.offset + offset } in
+  let range = Range.add offset (x, y) in
+  let result = (path, range) in
+  Some result
 
 let use_subset (path, range) row _ =
   let dst, src, _ = row in
