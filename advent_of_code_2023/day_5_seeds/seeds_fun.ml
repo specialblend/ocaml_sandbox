@@ -46,8 +46,8 @@ module Range = struct
     | Overlap of int * int
 
   let intersect (a, b) = function
-    | x, y when x <= a && b <= y -> Some (Superset (a, b))
     | x, y when a <= x && y <= b -> Some (Subset (x, y))
+    | x, y when x <= a && b <= y -> Some (Superset (x, y))
     | x, y when x <= a && a <= y -> Some (Overlap (a, y))
     | x, y when x <= b && b <= y -> Some (Overlap (x, b))
     | _ -> None
