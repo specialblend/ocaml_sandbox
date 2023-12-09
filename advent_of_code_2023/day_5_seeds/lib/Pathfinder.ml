@@ -2,7 +2,7 @@ open Fun
 
 module Path = struct
   type t = {
-    window: Range.t;
+    domain: Range.t;
     offset: int;
   }
   [@@deriving show]
@@ -17,11 +17,11 @@ module Path = struct
     let a, b = range in
     let d_left = x - a in
     let d_right = y - b in
-    let left, right = path.window in
-    let window' = (left + d_left, right + d_right) in
+    let left, right = path.domain in
+    let domain' = (left + d_left, right + d_right) in
     let dst, src, _ = row in
     let offset = dst - src in
-    let path = { window = window'; offset = path.offset + offset } in
+    let path = { domain = domain'; offset = path.offset + offset } in
     let range = Range.add offset (x, y) in
     let cursor = { path; range } in
     cursor
@@ -78,20 +78,20 @@ let fold_table cursor table =
 
 let compile_header header =
   let dst, src, margin = header in
-  let window = (src, src + margin - 1) in
+  let domain = (src, src + margin - 1) in
   let offset = dst - src in
-  let range = Range.add offset window in
-  let path = Path.{ window; offset } in
+  let range = Range.add offset domain in
+  let path = Path.{ domain; offset } in
   let cursor = Path.{ path; range } in
   cursor
 
 let is_singleton = function
-  | Path.{ window = a, b; _ } -> a = b
+  | Path.{ domain = a, b; _ } -> a = b
 
 let fix_window path =
   (* idk why but left needs incremented by 1 *)
-  let Path.{ window = left, right; _ } = path in
-  Path.{ path with window = (left + 1, right) }
+  let Path.{ domain = left, right; _ } = path in
+  Path.{ path with domain = (left + 1, right) }
 
 let compile_table =
   let scan table header =
