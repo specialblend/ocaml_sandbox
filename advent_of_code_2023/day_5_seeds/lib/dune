@@ -2,4 +2,4 @@
  (name seeds)
  (libraries core fun regex str)
  (preprocess
-  (pps ppx_deriving.show)))
+  (pps ppx_deriving.show ppx_fields_conv)))

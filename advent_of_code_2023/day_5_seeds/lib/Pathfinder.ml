@@ -5,7 +5,7 @@ module Path = struct
     domain: Range.t;
     offset: int;
   }
-  [@@deriving show]
+  [@@deriving fields, show]
 
   type cursor = {
     path: t;
@@ -81,7 +81,7 @@ let compile_header header =
   let domain = (src, src + margin - 1) in
   let offset = dst - src in
   let range = Range.add offset domain in
-  let path = Path.{ domain; offset } in
+  let path = { Path.domain; Path.offset } in
   let cursor = Path.{ path; range } in
   cursor
 
@@ -108,3 +108,13 @@ let compile_paths table =
       |>| List.map fix_window
       |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
   | _ -> failwith "illegal"
+
+type known_seeds = Range.intersect list list [@@deriving show]
+
+let compile_known_seeds table =
+  let compile_seed seed =
+    table
+    |>| compile_paths
+    |>| List.filter_map (fun Path.{ domain; _ } -> Range.intersect domain seed)
+  in
+  List.map compile_seed

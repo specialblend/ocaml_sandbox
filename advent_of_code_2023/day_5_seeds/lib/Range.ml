@@ -4,6 +4,7 @@ type intersect =
   | Subset of int * int
   | Superset of int * int
   | Overlap of int * int
+[@@deriving show]
 
 let intersect (a, b) = function
   | x, y when a <= x && y <= b -> Some (Subset (x, y))
