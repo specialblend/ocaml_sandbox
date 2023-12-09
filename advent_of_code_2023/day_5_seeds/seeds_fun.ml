@@ -79,7 +79,17 @@ let compile_rows result rows =
       let offset = dst - src in
       let path = { path with offset = path.offset + offset } in
       (path, Range.add offset range)
-  | Some (Overlap (_x, _y)) -> result
+  | Some (Overlap (x, y)) ->
+      let a, b = range in
+      let d_left = x - a in
+      let d_right = b - y in
+      let a', b' = path.window in
+      let window = (a' + d_left, b' - d_right) in
+      let dst, src, _ = row in
+      let offset = dst - src in
+      let path = { window; offset } in
+      let range = (x, y) in
+      (path, Range.add offset range)
   | _ -> result
 
 let compile_header_row table row =
