@@ -477,7 +477,7 @@ module Path_test = struct
        [%expect {||}] *)
 
   let%expect_test "compiled seed table" =
-    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
+    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_text in
     Parse_test.seeds_text
     |>| Seeds_fun.parse_almanac
     |>| snd
