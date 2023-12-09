@@ -95,10 +95,10 @@ module Path = struct
             match Range.intersect (range_of row) range with
             | Some (Subset (_x, _y)) ->
                 let dst, src, _ = row in
-                let offset = dst - src in
-                let path = { path with offset = path.offset + offset } in
-                let range' = Range.add offset range in
-                let result = (path, range') in
+                let offset' = dst - src in
+                let path' = { path with offset = path.offset + offset' } in
+                let range' = Range.add offset' range in
+                let result = (path', range') in
                 fold_table (Some result) table
             | Some (Overlap (x, y)) ->
                 let a, b = range in
@@ -112,8 +112,8 @@ module Path = struct
                   { window = window'; offset = path.offset + offset }
                 in
                 let range' = Range.add offset (x, y) in
-                let result = (path', range') in
-                fold_table (Some result) table
+                let result' = (path', range') in
+                fold_table (Some result') table
             | _ -> None))
     | _ -> result
 

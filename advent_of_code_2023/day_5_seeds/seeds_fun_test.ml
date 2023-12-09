@@ -428,19 +428,23 @@ module Path_test = struct
             let results = List.map (fun seed -> seed + offset) seeds in
             expected = results)
 
-  (* let%test "compiled seed table is correct" =
-     let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
-     Parse_test.seeds_text
-     |>| Seeds_fun.parse_almanac
-     |>| snd
-     |>| Seeds_fun.Path.compile_table
-     |>| List.for_all (fun path ->
-             let Seeds_fun.Path.{ window; offset } = path in
-             let x, y = window in
-             let seeds = [ x; y ] in
-             let expected =
-               List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
-             in
-             let results = List.map (fun seed -> seed + offset) seeds in
-             expected = results) *)
+  let%expect_test "compiled seed table is correct" =
+    let _, sections = Seeds_fun.parse_almanac Parse_test.seeds_sample_text in
+    Parse_test.seeds_text
+    |>| Seeds_fun.parse_almanac
+    |>| snd
+    |>| Seeds_fun.Path.compile_table
+    |>| List.iter (fun path ->
+            let Seeds_fun.Path.{ window; offset } = path in
+            let x, y = window in
+            let seeds = [ x; y ] in
+            let expected =
+              List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
+            in
+            let results = List.map (fun seed -> seed + offset) seeds in
+            List.iter2
+              (fun a b ->
+                print_endline (Format.sprintf "%d ->? %d -> %d" a b (a - b)))
+              results expected);
+    [%expect {||}]
 end
