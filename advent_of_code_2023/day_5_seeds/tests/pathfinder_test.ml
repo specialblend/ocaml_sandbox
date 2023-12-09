@@ -99,9 +99,9 @@ let%test "compiled sample table is correct" =
   |>| Pathfinder.compile_table
   |>| List.for_all (fun path ->
           let Pathfinder.{ window; offset } = path in
-          let seeds = Range.to_list window in
+          let seeds = Ranger.to_list window in
           let expected =
-            List.map (fun seed -> Look.look_table seed sections) seeds
+            List.map (fun seed -> Looker.look_table seed sections) seeds
           in
           let results = List.map (fun seed -> seed + offset) seeds in
           expected = results)
@@ -117,7 +117,7 @@ let%test "compiled seed table is correct" =
           let x, z = window in
           let seeds = [ x + 1; x + 2; z ] in
           let expected =
-            List.map (fun seed -> Look.look_table seed sections) seeds
+            List.map (fun seed -> Looker.look_table seed sections) seeds
           in
           let results = List.map (fun seed -> seed + offset) seeds in
           expected = results)
