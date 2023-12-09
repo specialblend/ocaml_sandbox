@@ -40,7 +40,6 @@ let use_subset (path, range) row _ =
 let fold_table result table =
   let rec fold (result, table) =
     match (result, table) with
-    | None, _ -> None
     | Some result, rows :: table ->
         let _, range = result in
         let fold_row row =
