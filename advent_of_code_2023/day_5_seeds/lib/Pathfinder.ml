@@ -106,4 +106,5 @@ let compile_table =
       |>| List.filter_map (scan table)
       |>| List.filter (fun path -> not (is_singleton path))
       |>| List.map fix_window
+      |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
   | _ -> failwith "illegal"
