@@ -109,18 +109,14 @@ let compile_paths table =
       |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
   | _ -> failwith "illegal"
 
-type known_seed = int * int [@@deriving show]
+type known_seed = Range.t * int [@@deriving show]
 type known_seeds = known_seed list [@@deriving show]
 
 let compile_known_seeds table =
   let compile seed path =
     let Path.{ domain; offset } = path in
     match Range.intersect domain seed with
-    | Some (Subset _) -> begin
-        let n, _ = seed in
-        let m = n + offset in
-        Some (n, m)
-      end
+    | Some (Subset _) -> Some (seed, offset)
     | _ -> None
   in
   let compile seed = table |>| compile_paths |>| List.find_map (compile seed) in
