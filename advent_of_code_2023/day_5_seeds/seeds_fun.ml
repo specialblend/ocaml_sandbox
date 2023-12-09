@@ -43,16 +43,26 @@ module Range = struct
   type intersect =
     | Subset of int * int
     | Superset of int * int
-    | Overlap of int * int
+    | OverlapRight of int * int
+    | OverlapLeft of int * int
 
   let intersect (a, b) = function
     | x, y when a <= x && y <= b -> Some (Subset (x, y))
     | x, y when x <= a && b <= y -> Some (Superset (x, y))
-    | x, y when x <= a && a <= y -> Some (Overlap (a, y))
-    | x, y when x <= b && b <= y -> Some (Overlap (x, b))
+    | x, y when x <= a && a <= y -> Some (OverlapLeft (a, y))
+    | x, y when x <= b && b <= y -> Some (OverlapRight (x, b))
     | _ -> None
 
   let add n (a, b) = (a + n, b + n)
+
+  let to_list (start, stop) =
+    let rec aux acc current =
+      if current < start then
+        acc
+      else
+        aux (current :: acc) (current - 1)
+    in
+    aux [] stop
 end
 
 module Path = struct
@@ -62,49 +72,87 @@ module Path = struct
   }
   [@@deriving show]
 
+  type paths = t list [@@deriving show]
+  type result = t * Range.t [@@deriving show]
+
   let range_of (_, src, margin) = (src, src + margin - 1)
 
   let row_intersects range row =
-    match Range.intersect range (range_of row) with
+    let r = range_of row in
+    match Range.intersect r range with
     | Some (Subset (_, _)) -> true
-    | Some (Overlap (_, _)) -> true
+    | Some (OverlapRight (_, _)) -> true
+    | Some (OverlapLeft (_, _)) -> true
     | _ -> false
 
-  let compile_rows result rows =
-    let path, range = result in
-    match rows |> List.find_opt (row_intersects range) with
-    | None -> result
-    | Some row ->
-    match Range.intersect range (range_of row) with
-    | Some (Subset _) ->
-        let dst, src, _ = row in
-        let offset = dst - src in
-        let path = { path with offset = path.offset + offset } in
-        (path, Range.add offset range)
-    | Some (Overlap (x, y)) ->
-        let a, b = range in
-        let d_left = x - a in
-        let d_right = b - y in
-        let a', b' = path.window in
-        let window = (a' + d_left, b' - d_right) in
-        let dst, src, _ = row in
-        let offset = dst - src in
-        let path = { window; offset } in
-        let range = (x, y) in
-        (path, Range.add offset range)
+  let rec fold_table result = function
+    | rows :: table -> (
+        match result with
+        | None -> None
+        | Some result -> (
+            let path, range = result in
+            match rows |> List.find_opt (row_intersects range) with
+            | None -> None
+            | Some row ->
+            match Range.intersect (range_of row) range with
+            | Some (Subset (_x, _y)) ->
+                let dst, src, _ = row in
+                let offset = dst - src in
+                let path = { path with offset = path.offset + offset } in
+                let range' = Range.add offset range in
+                let result = (path, range') in
+                (* print_endline
+                   (Format.sprintf "Subset %s -> %s" (Range.show range)
+                      (Range.show range')); *)
+                fold_table (Some result) table
+            | Some (OverlapRight (x, y)) ->
+                let a, b = range in
+                let d_left = x - a in
+                let d_right = b - y in
+                let a', b' = path.window in
+                let window = (a' + d_left, b' - d_right) in
+                let dst, src, _ = row in
+                let offset = dst - src in
+                let path = { window; offset = path.offset + offset } in
+                let range = (x, y) in
+                let range' = Range.add offset range in
+                let result = (path, range') in
+                (* print_endline
+                   (Format.sprintf "OverlapRight %s -> %s" (Range.show range)
+                      (Range.show range')); *)
+                fold_table (Some result) table
+            | Some (OverlapLeft (x, y)) ->
+                let a, b = range in
+                let d_left = a - x in
+                let d_right = b - y in
+                let a', b' = path.window in
+                let window = (a' + d_left, b' - d_right) in
+                let dst, src, _ = row in
+                let offset = dst - src in
+                let path = { window; offset = path.offset + offset } in
+                let range' = Range.add offset (x, y) in
+                let result = (path, range') in
+                (* print_endline
+                   (Format.sprintf "OverlapLeft %s -> %s" (Range.show range)
+                      (Range.show range')); *)
+                fold_table (Some result) table
+            | _ -> None))
     | _ -> result
 
-  let compile_header_row table row =
-    let dst, src, margin = row in
+  let compile_header_row table header =
+    let dst, src, margin = header in
     let window = (src, src + margin - 1) in
     let offset = dst - src in
+    let range = Range.add offset window in
     let path = { window; offset } in
-    let init = (path, window) in
-    let path, _ = List.fold_left compile_rows init table in
-    path
+    let init = (path, range) in
+
+    match fold_table (Some init) table with
+    | Some (path, _) -> Some path
+    | None -> None
 
   let compile_table : table -> t list = function
-    | init :: table -> List.map (compile_header_row table) init
+    | init :: table -> List.filter_map (compile_header_row table) init
     | _ -> failwith "illegal"
 end
 
