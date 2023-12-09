@@ -25,6 +25,72 @@ let parse_triple = function
 let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
 let parse_mappings = List.map (List.filter_map parse_mapping)
 
+(*
+   (a, b) -> (x, y)
+   def is_range_inside(subset, superset):
+    a_start, a_end = subset
+    b_start, b_end = superset
+    return b_start <= a_start and a_end <= b_end
+*)
+
+module Range = struct
+  type t = int * int
+
+  type intersect =
+    | Subset of int * int
+    | Superset of int * int
+    | Overlap of int * int
+
+  let intersect (a, b) = function
+    | x, y when x <= a && b <= y -> Some (Superset (a, b))
+    | x, y when a <= x && y <= b -> Some (Subset (x, y))
+    | x, y when x <= a && a <= y -> Some (Overlap (a, y))
+    | x, y when x <= b && b <= y -> Some (Overlap (x, b))
+    | _ -> None
+
+  let add n (a, b) = (a + n, b + n)
+end
+
+type path = {
+  window: Range.t;
+  offset: int;
+}
+
+let intersects left right =
+  match Range.intersect left right with
+  | Some (Subset (_, _)) -> true
+  | Some (Overlap (_, _)) -> true
+  | _ -> false
+
+let range_of (_, src, margin) = (src, src + margin - 1)
+
+let scan_row acc row =
+  let path, range = acc in
+  match row |> List.find_opt (fun col -> range_of col |> intersects range) with
+  | None -> acc
+  | Some col ->
+  match Range.intersect range (range_of col) with
+  | Some (Subset _) ->
+      let dst, src, _ = col in
+      let offset' = dst - src in
+      let range = Range.add offset' range in
+      let offset = path.offset + offset' in
+      ({ path with offset }, range)
+  | Some (Overlap (_, src)) -> acc
+  | _ -> acc
+
+let find_path rows (dst, src, margin) =
+  let window = (src, src + margin - 1) in
+  let offset = dst - src in
+  let path = { window; offset } in
+  let init = (path, window) in
+  let path, _ = List.fold_left scan_row init rows in
+  path
+
+let compile_table : table -> path list = function
+  | init :: rows -> List.map (find_path rows) init
+  | _ -> failwith "illegal"
+
 let look_row n row =
   let look n col =
     match col with
