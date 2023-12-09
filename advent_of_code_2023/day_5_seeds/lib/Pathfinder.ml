@@ -38,7 +38,8 @@ let use_subset (path, range) row _ =
   Some result'
 
 let fold_table result table =
-  let rec fold = function
+  let rec fold (result, table) =
+    match (result, table) with
     | None, _ -> None
     | Some result, rows :: table ->
         let _, range = result in
@@ -72,13 +73,13 @@ let compile_header header =
   let result = (path, range) in
   result
 
-let compile_table : table -> t list =
-  let use_header table header =
-    let result = compile_header header in
-    match table |> fold_table (Some result) with
-    | Some (path, _) -> Some path
-    | None -> None
-  in
-  function
-  | headers :: table -> List.filter_map (use_header table) headers
+let compile_table : table -> t list = function
+  | init :: table ->
+      List.filter_map
+        (fun header ->
+          let result = compile_header header in
+          match table |> fold_table (Some result) with
+          | Some (path, _) -> Some path
+          | None -> None)
+        init
   | _ -> failwith "illegal"
