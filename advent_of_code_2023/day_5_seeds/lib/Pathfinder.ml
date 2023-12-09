@@ -16,38 +16,43 @@ let row_intersects range row =
   | Some (Overlap (_, _)) -> true
   | _ -> false
 
-let rec fold_table result = function
-  | rows :: table -> (
-      match result with
+let use_overlap (path, range) row (x, y) =
+  let a, b = range in
+  let d_left = x - a in
+  let d_right = y - b in
+  let a', b' = path.window in
+  let window' = (a' + d_left, b' + d_right) in
+  let dst, src, _ = row in
+  let offset' = dst - src in
+  let path' = { window = window'; offset = path.offset + offset' } in
+  let range' = Range.add offset' (x, y) in
+  let result' = (path', range') in
+  Some result'
+
+let use_subset (path, range) row =
+  let dst, src, _ = row in
+  let offset' = dst - src in
+  let path' = { path with offset = path.offset + offset' } in
+  let range' = Range.add offset' range in
+  let result' = (path', range') in
+  Some result'
+
+let rec fold_table result table =
+  match (result, table) with
+  | None, _ -> None
+  | Some result, rows :: table -> (
+      let path, range = result in
+      match rows |> List.find_opt (row_intersects range) with
       | None -> None
-      | Some result -> (
-          let path, range = result in
-          match rows |> List.find_opt (row_intersects range) with
-          | None -> None
-          | Some row ->
-          match Range.intersect (range_of row) range with
-          | Some (Subset (_x, _y)) ->
-              let dst, src, _ = row in
-              let offset' = dst - src in
-              let path' = { path with offset = path.offset + offset' } in
-              let range' = Range.add offset' range in
-              let result' = (path', range') in
-              fold_table (Some result') table
-          | Some (Overlap (x, y)) ->
-              let a, b = range in
-              let d_left = x - a in
-              let d_right = y - b in
-              let a', b' = path.window in
-              let window' = (a' + d_left, b' + d_right) in
-              let dst, src, _ = row in
-              let offset' = dst - src in
-              let path' =
-                { window = window'; offset = path.offset + offset' }
-              in
-              let range' = Range.add offset' (x, y) in
-              let result' = (path', range') in
-              fold_table (Some result') table
-          | _ -> None))
+      | Some row ->
+      match Range.intersect (range_of row) range with
+      | Some (Subset (_x, _y)) ->
+          let result = use_subset (path, range) row in
+          fold_table result table
+      | Some (Overlap (x, y)) ->
+          let result = use_overlap result row (x, y) in
+          fold_table result table
+      | _ -> None)
   | _ -> result
 
 let compile_header table header =
