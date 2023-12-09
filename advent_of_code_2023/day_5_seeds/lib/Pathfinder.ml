@@ -29,7 +29,7 @@ let use_overlap (path, range) row (x, y) =
   let result' = (path', range') in
   Some result'
 
-let use_subset (path, range) row =
+let use_subset (path, range) row _ =
   let dst, src, _ = row in
   let offset' = dst - src in
   let path' = { path with offset = path.offset + offset' } in
@@ -37,22 +37,27 @@ let use_subset (path, range) row =
   let result' = (path', range') in
   Some result'
 
-let rec fold_table result table =
+let rec fold_table_into result table =
   match (result, table) with
   | None, _ -> None
-  | Some result, rows :: table -> (
-      let path, range = result in
-      match rows |> List.find_opt (row_intersects range) with
-      | None -> None
-      | Some row ->
-      match Range.intersect (range_of row) range with
-      | Some (Subset (_x, _y)) ->
-          let result = use_subset (path, range) row in
-          fold_table result table
-      | Some (Overlap (x, y)) ->
-          let result = use_overlap result row (x, y) in
-          fold_table result table
-      | _ -> None)
+  | Some result, rows :: table ->
+      let _, range = result in
+      let fold_row row =
+        let result' =
+          match Range.intersect (range_of row) range with
+          | Some (Subset (x, y)) ->
+              let result = use_subset result row (x, y) in
+              result
+          | Some (Overlap (x, y)) ->
+              let result = use_overlap result row (x, y) in
+              result
+          | _ -> None
+        in
+        fold_table_into result' table
+      in
+      rows
+      |>| List.find_opt (row_intersects range)
+      |>| fun row -> Option.bind row fold_row
   | _ -> result
 
 let compile_header table header =
@@ -61,8 +66,8 @@ let compile_header table header =
   let offset = dst - src in
   let range = Range.add offset window in
   let path = { window; offset } in
-  let init = (path, range) in
-  match fold_table (Some init) table with
+  let result = (path, range) in
+  match table |> fold_table_into (Some result) with
   | Some (path, _) -> Some path
   | None -> None
 

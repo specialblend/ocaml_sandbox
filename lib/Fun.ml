@@ -24,6 +24,12 @@ module List = struct
     mapi (fun k v -> if k |> is_between (i, i') then fn v else v)
 end
 
+module Option = struct
+  include Option
+
+  let flat_map fn x = bind x fn
+end
+
 module Str = struct
   include Str
 
