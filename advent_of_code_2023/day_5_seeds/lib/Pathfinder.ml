@@ -2,19 +2,19 @@ open Fun
 open Contract
 
 type t = {
-  window: Ranger.t;
+  window: Range.t;
   offset: int;
 }
 [@@deriving show]
 
 type paths = t list [@@deriving show]
-type result = t * Ranger.t [@@deriving show]
+type result = t * Range.t [@@deriving show]
 
 let range_of (_, src, margin) = (src, src + margin - 1)
 
 let row_intersects range row =
   let r = range_of row in
-  match Ranger.intersect r range with
+  match Range.intersect r range with
   | Some (Subset (_, _)) -> true
   | Some (Overlap (_, _)) -> true
   | _ -> false
@@ -28,12 +28,12 @@ let rec fold_table result = function
           match rows |> List.find_opt (row_intersects range) with
           | None -> None
           | Some row ->
-          match Ranger.intersect (range_of row) range with
+          match Range.intersect (range_of row) range with
           | Some (Subset (_x, _y)) ->
               let dst, src, _ = row in
               let offset' = dst - src in
               let path' = { path with offset = path.offset + offset' } in
-              let range' = Ranger.add offset' range in
+              let range' = Range.add offset' range in
               let result' = (path', range') in
               fold_table (Some result') table
           | Some (Overlap (x, y)) ->
@@ -47,7 +47,7 @@ let rec fold_table result = function
               let path' =
                 { window = window'; offset = path.offset + offset' }
               in
-              let range' = Ranger.add offset' (x, y) in
+              let range' = Range.add offset' (x, y) in
               let result' = (path', range') in
               fold_table (Some result') table
           | _ -> None))
@@ -57,7 +57,7 @@ let compile_header_row table header =
   let dst, src, margin = header in
   let window = (src, src + margin - 1) in
   let offset = dst - src in
-  let range = Ranger.add offset window in
+  let range = Range.add offset window in
   let path = { window; offset } in
   let init = (path, range) in
 

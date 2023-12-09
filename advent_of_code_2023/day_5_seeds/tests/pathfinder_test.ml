@@ -99,7 +99,7 @@ let%test "compiled sample table is correct" =
   |>| Pathfinder.compile_table
   |>| List.for_all (fun path ->
           let Pathfinder.{ window; offset } = path in
-          let seeds = Ranger.to_list window in
+          let seeds = Range.to_list window in
           let expected =
             List.map (fun seed -> Looker.look_table seed sections) seeds
           in
