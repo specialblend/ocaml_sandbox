@@ -61,7 +61,7 @@ let%expect_test "compile_paths seeds" =
     { Pathfinder.Path.domain = (4294380837, 4294967295); offset = -308853639 } |}]
 
 let%test "compiled sample table is correct" =
-  let _, sections = Parser.parse_almanac Parser_test.seeds_sample_text in
+  let _, table = Parser.parse_almanac Parser_test.seeds_sample_text in
   Parser_test.seeds_sample_text
   |>| Parser.parse_almanac
   |>| snd
@@ -70,13 +70,13 @@ let%test "compiled sample table is correct" =
           let Path.{ domain; offset } = path in
           let seeds = Range.to_list domain in
           let expected =
-            List.map (fun seed -> Looker.look_table seed sections) seeds
+            List.map (fun seed -> Looker.look_table seed table) seeds
           in
           let results = List.map (fun seed -> seed + offset) seeds in
           expected = results)
 
 let%test "compiled seed table is correct" =
-  let _, sections = Parser.parse_almanac Parser_test.seeds_text in
+  let _, table = Parser.parse_almanac Parser_test.seeds_text in
   Parser_test.seeds_text
   |>| Parser.parse_almanac
   |>| snd
@@ -87,7 +87,7 @@ let%test "compiled seed table is correct" =
           let y = (x + z) / 2 in
           let seeds = [ x; y; z ] in
           let expected =
-            List.map (fun seed -> Looker.look_table seed sections) seeds
+            List.map (fun seed -> Looker.look_table seed table) seeds
           in
           let results = List.map (fun seed -> seed + offset) seeds in
           expected = results)
