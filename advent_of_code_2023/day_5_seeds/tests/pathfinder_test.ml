@@ -91,3 +91,506 @@ let%test "compiled seed table is correct" =
           in
           let results = List.map (fun seed -> seed + offset) seeds in
           expected = results)
+
+let%expect_test "compile_known_seeds" =
+  let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
+  let known_seeds = compile_known_seeds table seeds in
+  print_endline (show_known_seeds known_seeds);
+  [%expect {|
+    [[((Range.Superset (41218238, 421491713)),
+       { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 })];
+      [((Range.Subset (481818804, 233571979)),
+        { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 })
+        ];
+      [((Range.Subset (944138913, 251104806)),
+        { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (944138913, 251104806)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 })
+        ];
+      [((Range.Subset (1255413673, 350530906)),
+        { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (1255413673, 350530906)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           })
+        ];
+      [((Range.Subset (1920342932, 127779721)),
+        { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (1920342932, 127779721)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           })
+        ];
+      [((Range.Subset (2109326496, 538709762)),
+        { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           });
+        ((Range.Subset (2109326496, 538709762)),
+         { Pathfinder.Path.domain = (2086137847, 2088091502); offset = -847138651
+           })
+        ];
+      [((Range.Subset (2906248740, 266447632)),
+        { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2086137847, 2088091502); offset = -847138651
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2253415953, 2269053206);
+           offset = -2050966996 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2361908617, 2383690007);
+           offset = -1747071946 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2383690009, 2416384373); offset = 959744588
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2568591487, 2604369519);
+           offset = -1223292607 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2605613671, 2623158994);
+           offset = -2420710039 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2667969938, 2681059372);
+           offset = -1427017085 });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2683163218, 2692186170); offset = 1533326409
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2711764762, 2724264424); offset = 1290124945
+           });
+        ((Range.Subset (2906248740, 266447632)),
+         { Pathfinder.Path.domain = (2776195130, 2779175480); offset = -409308345
+           })
+        ];
+      [((Range.Subset (3454130719, 50644329)),
+        { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2086137847, 2088091502); offset = -847138651
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2253415953, 2269053206);
+           offset = -2050966996 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2361908617, 2383690007);
+           offset = -1747071946 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2383690009, 2416384373); offset = 959744588
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2568591487, 2604369519);
+           offset = -1223292607 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2605613671, 2623158994);
+           offset = -2420710039 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2667969938, 2681059372);
+           offset = -1427017085 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2683163218, 2692186170); offset = 1533326409
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2711764762, 2724264424); offset = 1290124945
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2776195130, 2779175480); offset = -409308345
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (2940939060, 2946419136); offset = 104748907
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (3169731720, 3170733408);
+           offset = -2810516698 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (3180154164, 3192666657);
+           offset = -1795533993 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (3401349678, 3404859217);
+           offset = -1031482541 });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (3429676495, 3429737173); offset = -384049208
+           });
+        ((Range.Subset (3454130719, 50644329)),
+         { Pathfinder.Path.domain = (3429737175, 3434135476);
+           offset = -1565516394 })
+        ];
+      [((Range.Subset (3579244700, 267233350)),
+        { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2086137847, 2088091502); offset = -847138651
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2253415953, 2269053206);
+           offset = -2050966996 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2361908617, 2383690007);
+           offset = -1747071946 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2383690009, 2416384373); offset = 959744588
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2568591487, 2604369519);
+           offset = -1223292607 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2605613671, 2623158994);
+           offset = -2420710039 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2667969938, 2681059372);
+           offset = -1427017085 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2683163218, 2692186170); offset = 1533326409
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2711764762, 2724264424); offset = 1290124945
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2776195130, 2779175480); offset = -409308345
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (2940939060, 2946419136); offset = 104748907
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (3169731720, 3170733408);
+           offset = -2810516698 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (3180154164, 3192666657);
+           offset = -1795533993 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (3401349678, 3404859217);
+           offset = -1031482541 });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (3429676495, 3429737173); offset = -384049208
+           });
+        ((Range.Subset (3579244700, 267233350)),
+         { Pathfinder.Path.domain = (3429737175, 3434135476);
+           offset = -1565516394 })
+        ];
+      [((Range.Subset (4173137165, 60179884)),
+        { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (650502765, 657139062); offset = 2129081357 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (768686734, 773812761); offset = 2341509609 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (773812763, 835303388); offset = 3316722590 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (858089780, 873640810); offset = 2695959987 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (979257606, 990438940); offset = 1318336963 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1098613332, 1114497264); offset = 2634856385
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1124514127, 1129263946); offset = 1436858815
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1535118373, 1545830629); offset = 415864339
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1548974918, 1557270806); offset = -215426509
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1633120599, 1662888272);
+           offset = -1331275069 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1808537667, 1814135908); offset = 2276399443
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (1816346943, 1895435163); offset = 797624495
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2086137847, 2088091502); offset = -847138651
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2253415953, 2269053206);
+           offset = -2050966996 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2361908617, 2383690007);
+           offset = -1747071946 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2383690009, 2416384373); offset = 959744588
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2568591487, 2604369519);
+           offset = -1223292607 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2605613671, 2623158994);
+           offset = -2420710039 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2667969938, 2681059372);
+           offset = -1427017085 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2683163218, 2692186170); offset = 1533326409
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2711764762, 2724264424); offset = 1290124945
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2776195130, 2779175480); offset = -409308345
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (2940939060, 2946419136); offset = 104748907
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3169731720, 3170733408);
+           offset = -2810516698 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3180154164, 3192666657);
+           offset = -1795533993 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3401349678, 3404859217);
+           offset = -1031482541 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3429676495, 3429737173); offset = -384049208
+           });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3429737175, 3434135476);
+           offset = -1565516394 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3832436688, 3847103899);
+           offset = -1963817604 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (3970575742, 3995948346);
+           offset = -3752489530 });
+        ((Range.Subset (4173137165, 60179884)),
+         { Pathfinder.Path.domain = (4119971125, 4145767629);
+           offset = -2848556938 })
+        ]
+      ] |}]

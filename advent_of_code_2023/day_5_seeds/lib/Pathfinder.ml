@@ -109,12 +109,16 @@ let compile_paths table =
       |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
   | _ -> failwith "illegal"
 
-type known_seeds = Range.intersect list list [@@deriving show]
+type known_seeds = (Range.intersect * Path.t) list list [@@deriving show]
 
 let compile_known_seeds table =
   let compile_seed seed =
     table
     |>| compile_paths
-    |>| List.filter_map (fun p -> Range.intersect (Path.domain p) seed)
+    |>| List.filter_map (fun path ->
+            let d = Path.domain path in
+            match Range.intersect d seed with
+            | None -> None
+            | Some intersect -> Some (intersect, path))
   in
   List.map compile_seed
