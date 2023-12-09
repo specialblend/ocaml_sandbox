@@ -40,8 +40,8 @@ humidity-to-location map:
 
 let%expect_test "parse_all" =
   seeds_sample_text
-  |>| Seeds_fun.parse_all
-  |>| Seeds_fun.show_map
+  |>| Seeds_fun.parse_almanac
+  |>| Seeds_fun.show_almanac
   |>| print_endline;
   [%expect
     {|
@@ -67,14 +67,14 @@ let%expect_test "look_row when not exists" =
 
 let%expect_test "look_table 14" =
   let seed = 14 in
-  let _, sections = Seeds_fun.parse_all seeds_sample_text in
+  let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
 
   Seeds_fun.look_table seed sections |> print_int;
   [%expect {| 43 |}]
 
 let%expect_test "map seeds to final numbers" =
   let seeds = [ 79; 14; 55; 13 ] in
-  let _, sections = Seeds_fun.parse_all seeds_sample_text in
+  let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
 
   List.map (fun seed -> Seeds_fun.look_table seed sections) seeds
   |> List.map string_of_int
@@ -84,7 +84,7 @@ let%expect_test "map seeds to final numbers" =
 
 let%expect_test "look_min" =
   let seeds = [ 79; 14; 55; 13 ] in
-  let _, sections = Seeds_fun.parse_all seeds_sample_text in
+  let _, sections = Seeds_fun.parse_almanac seeds_sample_text in
 
   Seeds_fun.look_min (seeds, sections) |> string_of_int |> print_endline;
   [%expect {| 35 |}]

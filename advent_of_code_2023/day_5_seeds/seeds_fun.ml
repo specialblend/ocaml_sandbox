@@ -77,8 +77,9 @@ let compile_rows result rows =
   | Some (Subset _) ->
       let dst, src, _ = row in
       let offset = dst - src in
-      ({ path with offset = path.offset + offset }, Range.add offset range)
-  | Some (Overlap (_, src)) -> result
+      let path = { path with offset = path.offset + offset } in
+      (path, Range.add offset range)
+  | Some (Overlap (_x, _y)) -> result
   | _ -> result
 
 let compile_header_row table row =
