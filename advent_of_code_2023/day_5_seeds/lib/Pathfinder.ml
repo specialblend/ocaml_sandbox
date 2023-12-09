@@ -115,6 +115,6 @@ let compile_known_seeds table =
   let compile_seed seed =
     table
     |>| compile_paths
-    |>| List.filter_map (fun Path.{ domain; _ } -> Range.intersect domain seed)
+    |>| List.filter_map (fun p -> Range.intersect (Path.domain p) seed)
   in
   List.map compile_seed
