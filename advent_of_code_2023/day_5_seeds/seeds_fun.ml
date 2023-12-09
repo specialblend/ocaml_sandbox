@@ -5,11 +5,10 @@ and _EOL = Str.regexp "\n"
 and _EOL2 = Str.regexp "\n\n"
 
 type seed = int * int [@@deriving show]
-type col = int * int * int [@@deriving show]
-type seeds = seed list [@@deriving show]
-type row = col list [@@deriving show]
-type table = row list [@@deriving show]
-type map = seed list * table [@@deriving show]
+type row = int * int * int [@@deriving show]
+type map = row list [@@deriving show]
+type table = map list [@@deriving show]
+type almanac = seed list * table [@@deriving show]
 
 let rec chunk_pairs = function
   | x :: y :: rest -> (x, y) :: chunk_pairs rest
@@ -22,16 +21,21 @@ let parse_triple = function
   | [ dst; src; range ] -> Some (dst, src, range)
   | _ -> None
 
-let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
-let parse_mappings = List.map (List.filter_map parse_mapping)
+let parse_map = List.filter_map int_of_string_opt >> parse_triple
+let parse_maps = List.map (List.filter_map parse_map)
 
-(*
-   (a, b) -> (x, y)
-   def is_range_inside(subset, superset):
-    a_start, a_end = subset
-    b_start, b_end = superset
-    return b_start <= a_start and a_end <= b_end
-*)
+let parse_almanac text : almanac =
+  let parse_group text =
+    text
+    |>| Str.split _EOL
+    |>| List.map (Regex.find_all _NUM >> List.rev)
+    |>| List.filter (fun x -> List.length x > 0)
+  in
+  Str.split _EOL2 text
+  |>| List.map parse_group
+  |>| function
+  | h :: t -> (parse_seeds h, parse_maps t)
+  | _ -> failwith "illegal"
 
 module Range = struct
   type t = int * int
@@ -56,39 +60,38 @@ type path = {
   offset: int;
 }
 
-let intersects left right =
-  match Range.intersect left right with
+let range_of (_, src, margin) = (src, src + margin - 1)
+
+let row_intersects range row =
+  match Range.intersect range (range_of row) with
   | Some (Subset (_, _)) -> true
   | Some (Overlap (_, _)) -> true
   | _ -> false
 
-let range_of (_, src, margin) = (src, src + margin - 1)
-
-let scan_row acc row =
-  let path, range = acc in
-  match row |> List.find_opt (fun col -> range_of col |> intersects range) with
-  | None -> acc
-  | Some col ->
-  match Range.intersect range (range_of col) with
+let compile_rows result rows =
+  let path, range = result in
+  match rows |> List.find_opt (row_intersects range) with
+  | None -> result
+  | Some row ->
+  match Range.intersect range (range_of row) with
   | Some (Subset _) ->
-      let dst, src, _ = col in
-      let offset' = dst - src in
-      let range = Range.add offset' range in
-      let offset = path.offset + offset' in
-      ({ path with offset }, range)
-  | Some (Overlap (_, src)) -> acc
-  | _ -> acc
+      let dst, src, _ = row in
+      let offset = dst - src in
+      ({ path with offset = path.offset + offset }, Range.add offset range)
+  | Some (Overlap (_, src)) -> result
+  | _ -> result
 
-let find_path rows (dst, src, margin) =
+let compile_header_row table row =
+  let dst, src, margin = row in
   let window = (src, src + margin - 1) in
   let offset = dst - src in
   let path = { window; offset } in
   let init = (path, window) in
-  let path, _ = List.fold_left scan_row init rows in
+  let path, _ = List.fold_left compile_rows init table in
   path
 
 let compile_table : table -> path list = function
-  | init :: rows -> List.map (find_path rows) init
+  | init :: table -> List.map (compile_header_row table) init
   | _ -> failwith "illegal"
 
 let look_row n row =
@@ -115,16 +118,3 @@ let look_table = List.fold_left look_row
 let look_min (seeds, table) =
   List.map (fun seed -> look_table seed table) seeds
   |> List.fold_left min max_int
-
-let parse_sect sect =
-  sect
-  |>| Str.split _EOL
-  |>| List.map (Regex.find_all _NUM >> List.rev)
-  |>| List.filter (fun x -> List.length x > 0)
-
-let parse_all text : map =
-  Str.split _EOL2 text
-  |>| List.map parse_sect
-  |>| function
-  | h :: t -> (parse_seeds h, parse_mappings t)
-  | _ -> failwith "illegal"
