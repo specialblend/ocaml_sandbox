@@ -31,11 +31,11 @@ let use_overlap (path, range) row (x, y) =
 
 let use_subset (path, range) row _ =
   let dst, src, _ = row in
-  let offset' = dst - src in
-  let path' = { path with offset = path.offset + offset' } in
-  let range' = Range.add offset' range in
-  let result' = (path', range') in
-  Some result'
+  let offset = dst - src in
+  let path = { path with offset = path.offset + offset } in
+  let range = Range.add offset range in
+  let result = (path, range) in
+  Some result
 
 let fold_table init_result init_table =
   let rec fold (result, table) =
