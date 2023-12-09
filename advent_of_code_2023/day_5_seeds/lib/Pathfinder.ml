@@ -53,18 +53,17 @@ let rec fold_table result = function
           | _ -> None))
   | _ -> result
 
-let compile_header_row table header =
+let compile_header table header =
   let dst, src, margin = header in
   let window = (src, src + margin - 1) in
   let offset = dst - src in
   let range = Range.add offset window in
   let path = { window; offset } in
   let init = (path, range) in
-
   match fold_table (Some init) table with
   | Some (path, _) -> Some path
   | None -> None
 
 let compile_table : table -> t list = function
-  | init :: table -> List.filter_map (compile_header_row table) init
+  | init :: table -> List.filter_map (compile_header table) init
   | _ -> failwith "illegal"

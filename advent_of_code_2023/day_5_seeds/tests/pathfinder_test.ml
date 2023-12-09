@@ -1,28 +1,28 @@
 open Fun
 open Seeds
 
-let%expect_test "compile_header_row sample" =
+let%expect_test "compile_header sample" =
   let header = (50, 98, 2) in
   Parser_test.seeds_sample_text
   |>| Parser.parse_almanac
   |>| snd
   |>| function
   | _ :: table ->
-      Pathfinder.compile_header_row table header
+      Pathfinder.compile_header table header
       |>| Option.map Pathfinder.show
       |>| Option.map print_endline
       |>| ignore;
       [%expect {| { Pathfinder.window = (98, 98); offset = -31 } |}]
   | _ -> failwith "no table"
 
-let%expect_test "compile_header_row seeds" =
+let%expect_test "compile_header seeds" =
   let header = (1903578414, 0, 20266514) in
   Parser_test.seeds_text
   |>| Parser.parse_almanac
   |>| snd
   |>| function
   | _ :: table ->
-      Pathfinder.compile_header_row table header
+      Pathfinder.compile_header table header
       |>| Option.map Pathfinder.show
       |>| Option.map print_endline
       |>| ignore;
