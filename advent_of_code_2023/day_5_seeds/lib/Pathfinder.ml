@@ -94,7 +94,7 @@ let fix_window path =
   Path.{ path with domain = (left + 1, right) }
 
 let compile_paths table =
-  let scan table header =
+  let scan_header table header =
     let cursor = compile_header header in
     match fold_table (Some cursor) table with
     | Some Path.{ path; _ } -> Some path
@@ -103,7 +103,7 @@ let compile_paths table =
   match table with
   | headers :: table ->
       headers
-      |>| List.filter_map (scan table)
+      |>| List.filter_map (scan_header table)
       |>| List.filter (fun path -> not (is_singleton path))
       |>| List.map fix_window
       |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
@@ -120,7 +120,7 @@ type known_seed = {
 type known_seeds = known_seed list [@@deriving show { with_path = false }]
 
 let compile_known_seeds table =
-  let compile seed path =
+  let compile_path seed path =
     let Path.{ domain; _ } = path in
     let a, b = seed in
     let range = (a, a + b) in
@@ -128,5 +128,9 @@ let compile_known_seeds table =
     | Some intersect -> Some { seed; range; path; intersect }
     | _ -> None
   in
-  let compile seed = table |>| compile_paths |>| List.find_map (compile seed) in
+  let compile seed =
+    table
+    |>| compile_paths
+    |>| List.find_map (fun path -> compile_path seed path)
+  in
   List.filter_map compile
