@@ -5,7 +5,7 @@ module Path = struct
     domain: Range.t;
     offset: int;
   }
-  [@@deriving fields, show]
+  [@@deriving fields, show { with_path = false }]
 
   type cursor = {
     path: t;
@@ -115,9 +115,9 @@ type known_seed = {
   path: Path.t;
   intersect: Range.intersect;
 }
-[@@deriving show]
+[@@deriving show { with_path = false }]
 
-type known_seeds = known_seed list [@@deriving show]
+type known_seeds = known_seed list [@@deriving show { with_path = false }]
 
 let compile_known_seeds table =
   let compile seed path =

@@ -1,10 +1,10 @@
-type t = int * int [@@deriving show]
+type t = int * int [@@deriving show { with_path = false }]
 
 type intersect =
   | Subset of int * int
   | Superset of int * int
   | Overlap of int * int
-[@@deriving show]
+[@@deriving show { with_path = false }]
 
 let intersect (a, b) = function
   | x, y when a <= x && y <= b -> Some (Subset (x, y))
