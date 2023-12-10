@@ -96,33 +96,38 @@ let%expect_test "compile_known_seeds" =
   |>| List.iter print_endline;
   [%expect
     {|
-    { Pathfinder.seed = (481818804, 233571979);
+    { Pathfinder.seed = (41218238, 421491713); range = (41218238, 462709951);
       path =
-      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
-    { Pathfinder.seed = (944138913, 251104806);
+      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 };
+      intersect = (Range.Superset (41218238, 462709951)) }
+    { Pathfinder.seed = (481818804, 233571979); range = (481818804, 715390783);
       path =
-      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+      { Pathfinder.Path.domain = (498356426, 515916487); offset = 573016119 };
+      intersect = (Range.Superset (481818804, 715390783)) }
+    { Pathfinder.seed = (944138913, 251104806); range = (944138913, 1195243719);
+      path =
+      { Pathfinder.Path.domain = (929849139, 957158779); offset = 3127778329 };
+      intersect = (Range.Overlap (944138913, 957158779)) }
     { Pathfinder.seed = (1255413673, 350530906);
+      range = (1255413673, 1605944579);
       path =
-      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
-    { Pathfinder.seed = (1920342932, 127779721);
-      path =
-      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } }
+      { Pathfinder.Path.domain = (1239000361, 1308640991); offset = -487996698 };
+      intersect = (Range.Overlap (1255413673, 1308640991)) }
     { Pathfinder.seed = (2109326496, 538709762);
+      range = (2109326496, 2648036258);
       path =
-      { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 } }
+      { Pathfinder.Path.domain = (2253415953, 2269053206); offset = -2050966996 };
+      intersect = (Range.Superset (2109326496, 2648036258)) }
     { Pathfinder.seed = (2906248740, 266447632);
+      range = (2906248740, 3172696372);
       path =
-      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
-    { Pathfinder.seed = (3454130719, 50644329);
-      path =
-      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } }
+      { Pathfinder.Path.domain = (2940939060, 2946419136); offset = 104748907 };
+      intersect = (Range.Superset (2906248740, 3172696372)) }
     { Pathfinder.seed = (3579244700, 267233350);
+      range = (3579244700, 3846478050);
       path =
-      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
-    { Pathfinder.seed = (4173137165, 60179884);
-      path =
-      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } } |}]
+      { Pathfinder.Path.domain = (3832436688, 3847103899); offset = -1963817604 };
+      intersect = (Range.Overlap (3832436688, 3846478050)) } |}]
 
 let%expect_test "print lookup" =
   let seeds, table = Parser.parse_almanac Parser_test.seeds_text in

@@ -110,8 +110,10 @@ let compile_paths table =
   | _ -> failwith "illegal"
 
 type known_seed = {
-  seed: Range.t;
+  seed: Contract.seed;
+  range: Range.t;
   path: Path.t;
+  intersect: Range.intersect;
 }
 [@@deriving show]
 
@@ -120,8 +122,10 @@ type known_seeds = known_seed list [@@deriving show]
 let compile_known_seeds table =
   let compile seed path =
     let Path.{ domain; _ } = path in
-    match Range.intersect domain seed with
-    | Some (Subset _) -> Some { seed; path }
+    let a, b = seed in
+    let range = (a, a + b) in
+    match Range.intersect domain range with
+    | Some intersect -> Some { seed; range; path; intersect }
     | _ -> None
   in
   let compile seed = table |>| compile_paths |>| List.find_map (compile seed) in
