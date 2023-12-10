@@ -62,9 +62,7 @@ let%expect_test "compile_paths seeds" =
 
 let%test "compiled sample table is correct" =
   let _, table = Parser.parse_almanac Parser_test.seeds_sample_text in
-  Parser_test.seeds_sample_text
-  |>| Parser.parse_almanac
-  |>| snd
+  table
   |>| Pathfinder.compile_paths
   |>| List.for_all (fun path ->
           let Path.{ domain; offset } = path in
@@ -77,9 +75,7 @@ let%test "compiled sample table is correct" =
 
 let%test "compiled seed table is correct" =
   let _, table = Parser.parse_almanac Parser_test.seeds_text in
-  Parser_test.seeds_text
-  |>| Parser.parse_almanac
-  |>| snd
+  table
   |>| Pathfinder.compile_paths
   |>| List.for_all (fun path ->
           let Path.{ domain; offset } = path in
@@ -100,12 +96,65 @@ let%expect_test "compile_known_seeds" =
   |>| List.iter print_endline;
   [%expect
     {|
-    ((481818804, 233571979), 2377399210)
-    ((944138913, 251104806), 2377399210)
-    ((1255413673, 350530906), 2377399210)
-    ((1920342932, 127779721), 1523978333)
-    ((2109326496, 538709762), 316619784)
-    ((2906248740, 266447632), 2377399210)
-    ((3454130719, 50644329), 1523978333)
-    ((3579244700, 267233350), 2377399210)
-    ((4173137165, 60179884), 1523978333) |}]
+    { Pathfinder.seed = (481818804, 233571979);
+      path =
+      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+    { Pathfinder.seed = (944138913, 251104806);
+      path =
+      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+    { Pathfinder.seed = (1255413673, 350530906);
+      path =
+      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+    { Pathfinder.seed = (1920342932, 127779721);
+      path =
+      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } }
+    { Pathfinder.seed = (2109326496, 538709762);
+      path =
+      { Pathfinder.Path.domain = (536917988, 544654657); offset = 316619784 } }
+    { Pathfinder.seed = (2906248740, 266447632);
+      path =
+      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+    { Pathfinder.seed = (3454130719, 50644329);
+      path =
+      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } }
+    { Pathfinder.seed = (3579244700, 267233350);
+      path =
+      { Pathfinder.Path.domain = (438168827, 446641972); offset = 2377399210 } }
+    { Pathfinder.seed = (4173137165, 60179884);
+      path =
+      { Pathfinder.Path.domain = (130988761, 144724434); offset = 1523978333 } } |}]
+
+let%expect_test "print lookup" =
+  let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
+  List.iter
+    (fun (start, _) ->
+      let n = Looker.look_table start table in
+      Printf.printf "%d -> %d\n" start n)
+    seeds;
+  [%expect
+    {|
+    41218238 -> 3550589567
+    481818804 -> 3860266581
+    944138913 -> 4071917242
+    1255413673 -> 767416975
+    1920342932 -> 2591030530
+    2109326496 -> 1471140253
+    2906248740 -> 1762824436
+    3454130719 -> 2613413552
+    3579244700 -> 2395376000
+    4173137165 -> 251346198 |}]
+
+(* let%test "compile_known_seeds verification" =
+   let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
+   let verify_known_seed (seed, offset) =
+     let x, z = seed in
+     let _y = (x + z) / 2 in
+     let seeds = [ x + 1 ] in
+     List.for_all
+       (fun seed ->
+         let expected = Looker.look_table seed table in
+         let result = seed + offset in
+         expected = result)
+       seeds
+   in
+   seeds |>| compile_known_seeds table |>| List.for_all verify_known_seed *)
