@@ -22,7 +22,7 @@ module Path = struct
     let dst, src, _ = row in
     let offset = dst - src in
     let path = { domain = domain'; offset = path.offset + offset } in
-    let range = Range.add offset (x, y) in
+    let range = Range.add_both offset (x, y) in
     let cursor = { path; range } in
     cursor
 
@@ -31,7 +31,7 @@ module Path = struct
     let dst, src, _ = row in
     let offset = dst - src in
     let path = { path with offset = path.offset + offset } in
-    let range = Range.add offset range in
+    let range = Range.add_both offset range in
     let cursor = { path; range } in
     cursor
 end
@@ -80,7 +80,7 @@ let compile_header header =
   let dst, src, margin = header in
   let domain = (src, src + margin - 1) in
   let offset = dst - src in
-  let range = Range.add offset domain in
+  let range = Range.add_both offset domain in
   let path = { Path.domain; Path.offset } in
   let cursor = Path.{ path; range } in
   cursor

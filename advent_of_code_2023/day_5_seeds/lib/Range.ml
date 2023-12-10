@@ -13,7 +13,7 @@ let intersect (a, b) = function
   | x, y when x <= a && a <= y -> Some (Overlap (a, y))
   | _ -> None
 
-let add n (a, b) = (a + n, b + n)
+let add_both n (a, b) = (a + n, b + n)
 
 let to_list (start, stop) =
   let rec aux acc current =
