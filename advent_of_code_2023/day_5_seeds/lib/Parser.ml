@@ -1,4 +1,5 @@
 open Fun
+open Contract
 
 let _NUM = Str.regexp "[0-9]+"
 and _EOL = Str.regexp "\n"
@@ -13,13 +14,13 @@ let parse_seeds rows =
   |>| List.concat_map (List.filter_map int_of_string_opt)
   |>| chunk_pairs
   |>| List.sort compare
-  |>| List.map (fun (x, y) -> Range.make (x, x + y))
+  |>| List.map (fun (x, y) -> Seed (Range.make (x, x + y)))
 
 let parse_triple = function
   | [ dst; src; margin ] ->
       let range = Range.make (src, src + margin)
       and offset = dst - src in
-      (range, offset)
+      Mapping (range, offset)
   | _ -> failwith "illegal tuple"
 
 let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
