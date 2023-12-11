@@ -8,7 +8,7 @@ let%expect_test "compile_paths sample" =
   |>| snd
   |>| Pathfinder.compile_paths
   |>| List.iter (Path.show >> print_endline);
-  [%expect {| |}]
+  [%expect {||}]
 
 let%expect_test "compile_paths seeds" =
   Parser_test.seeds_text
@@ -70,7 +70,7 @@ let%test "compiled sample table is correct" =
           let expected =
             List.map (fun seed -> Looker.look_table seed table) seeds
           in
-          let results = List.map (fun seed -> seed + offset) seeds in
+          let results = List.map (( + ) offset) seeds in
           expected = results)
 
 let%test "compiled seed table is correct" =

@@ -29,7 +29,7 @@ let%test "range intersect overlap right" =
   let range2 = (4, 12) in
 
   match Range.intersect range1 range2 with
-  | Some (Overlap (4, 10)) -> true
+  | Some (OverlapRight (4, 10)) -> true
   | _ -> false
 
 let%test "range intersect overlap left" =
@@ -37,7 +37,7 @@ let%test "range intersect overlap left" =
   let range2 = (2, 7) in
 
   match Range.intersect range1 range2 with
-  | Some (Overlap (5, 7)) -> true
+  | Some (OverlapLeft (5, 7)) -> true
   | _ -> false
 
 let%test "range intersect none" =

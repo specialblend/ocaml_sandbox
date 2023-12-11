@@ -42,7 +42,8 @@ let row_intersects range row =
   let r = range_of row in
   match Range.intersect r range with
   | Some (Subset (_, _)) -> true
-  | Some (Overlap (_, _)) -> true
+  | Some (OverlapRight (_, _)) -> true
+  | Some (OverlapLeft (_, _)) -> true
   | _ -> false
 
 let move_cursor fold prev rest row =
@@ -52,7 +53,8 @@ let move_cursor fold prev rest row =
     let next_move =
       match Range.intersect next_range range with
       | Some (Subset (x, y)) -> Some (Path.use_subset (x, y))
-      | Some (Overlap (x, y)) -> Some (Path.use_overlap (x, y))
+      | Some (OverlapLeft (x, y)) -> Some (Path.use_overlap (x, y))
+      | Some (OverlapRight (x, y)) -> Some (Path.use_overlap (x, y))
       | _ -> None
     in
     match next_move with
@@ -109,28 +111,29 @@ let compile_paths table =
       |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
   | _ -> failwith "illegal"
 
-type known_seed = {
-  seed: Contract.seed;
-  range: Range.t;
-  path: Path.t;
-  intersect: Range.intersect;
-}
-[@@deriving show { with_path = false }]
-
-type known_seeds = known_seed list [@@deriving show { with_path = false }]
+type known_seed = ((int * int) * int option) list [@@deriving show]
 
 let compile_known_seeds table =
   let compile_path seed path =
-    let Path.{ domain; _ } = path in
-    let a, b = seed in
-    let range = (a, a + b) in
+    let Path.{ domain; offset } = path in
+    let start, margin = seed in
+    let a, b = domain in
+    let range = (start, start + margin) in
+    let _x, _y = range in
     match Range.intersect domain range with
-    | Some intersect -> Some { seed; range; path; intersect }
-    | _ -> None
+    | None -> None
+    | Some (Subset _) -> Some [ (range, Some offset) ]
+    | Some (Superset (x, y)) ->
+        let left = (x, a - 1) in
+        let right = (b + 1, y) in
+        let middle = (a, b) in
+        Some [ (left, None); (middle, Some offset); (right, None) ]
+    | Some (OverlapRight (x', y')) -> Some [ ((x', y'), Some offset) ]
+    | Some (OverlapLeft (x', y')) -> Some [ ((x', y'), Some offset) ]
   in
   let compile seed =
     table
     |>| compile_paths
-    |>| List.find_map (fun path -> compile_path seed path)
+    |>| List.filter_map (fun path -> compile_path seed path)
   in
-  List.filter_map compile
+  List.concat_map compile
