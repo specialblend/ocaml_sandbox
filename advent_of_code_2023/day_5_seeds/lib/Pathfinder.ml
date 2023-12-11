@@ -114,29 +114,33 @@ let compile_paths table =
 type known_seed = (int * int) * int option [@@deriving show]
 type known_seeds = known_seed list list [@@deriving show]
 
-let compile_known_seeds table =
-  let compile_path seed path =
-    let Path.{ domain; offset } = path in
-    let start, margin = seed in
-    let a, b = domain in
-    let range = (start, start + margin) in
-    let _x, _y = range in
-    match Range.intersect domain range with
-    | None -> None
-    | Some (Subset _) -> Some [ (range, Some offset) ]
-    | Some (OverlapRight (x', y')) ->
-        Some [ ((a, x' - 1), None); ((x', y'), Some offset) ]
-    | Some (OverlapLeft (x', y')) ->
-        Some [ ((x', y'), Some offset); ((y' + 1, b), None) ]
-    | Some (Superset (x, y)) ->
-        let left = (x, a - 1) in
-        let right = (b + 1, y) in
-        let middle = (a, b) in
-        Some [ (left, None); (middle, Some offset); (right, None) ]
-  in
+let compile_path seed path =
+  let Path.{ domain; offset } = path in
+  let start, margin = seed in
+  let a, b = domain in
+  let range = (start, start + margin) in
+  let _x, _y = range in
+  match Range.intersect domain range with
+  | None -> None
+  | Some (Subset _) -> Some [ (range, Some offset) ]
+  | Some (OverlapRight (x', y')) ->
+      let left = (a, x' - 1) in
+      let right = (x', y') in
+      Some [ (left, None); (right, Some offset) ]
+  | Some (OverlapLeft (x', y')) ->
+      let left = (x', y') in
+      let right = (y' + 1, b) in
+      Some [ (left, Some offset); (right, None) ]
+  | Some (Superset (x, y)) ->
+      let left = (x, a - 1) in
+      let right = (b + 1, y) in
+      let middle = (a, b) in
+      Some [ (left, None); (middle, Some offset); (right, None) ]
+
+let compile_known_seeds table seeds =
   let compile seed =
     table
     |>| compile_paths
     |>| List.filter_map (fun path -> compile_path seed path)
   in
-  List.concat_map compile
+  List.concat_map compile seeds
