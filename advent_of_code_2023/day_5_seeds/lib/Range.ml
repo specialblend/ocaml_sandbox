@@ -15,3 +15,11 @@ let intersect (Range (a, b)) = function
   | Range (x, y) when x <= b && b <= y -> Some (OverlapRight (Range (x, b)))
   | Range (x, y) when x <= a && a <= y -> Some (OverlapLeft (Range (a, y)))
   | _ -> None
+
+let union (Range (a, b) as r1) (Range (x, y) as r2) =
+  match intersect r1 r2 with
+  | Some (Subset _) -> Some (Range (x, y))
+  | Some (Superset _) -> Some (Range (a, b))
+  | Some (OverlapRight _) -> Some (Range (a, y))
+  | Some (OverlapLeft _) -> Some (Range (x, b))
+  | None -> None
