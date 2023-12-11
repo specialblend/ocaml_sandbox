@@ -156,24 +156,23 @@ let compile_path seed path =
           (* --------------  *)
         ]
 
-let merge_unknown_seeds (seeds : known_seeds) =
-  let check_dupe seed seed' =
+let merge_unknown_seeds seeds =
+  let seeds = seeds |> List.flatten |> List.sort compare in
+  let is_unique seed seed' =
     match seed' with
     | _, Some _ -> true
-    | range', None -> begin
+    | range', _ -> begin
         let range, _ = seed in
         match Range.intersect range range' with
         | Some (Subset _) -> false
         | _ -> true
       end
   in
-  let seeds' = seeds |>| List.flatten |>| List.sort compare in
-  seeds'
-  |>| List.fold_left
-        (fun acc seed ->
-          let res = List.filter (check_dupe seed) acc in
-          seed :: res)
-        []
+  List.fold_left
+    (fun acc seed ->
+      let res = List.filter (is_unique seed) acc in
+      seed :: res)
+    [] seeds
 
 type compiled_seeds = known_seed list [@@deriving show]
 
