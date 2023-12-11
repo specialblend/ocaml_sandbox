@@ -23,3 +23,16 @@ let union (Range (a, b) as r1) (Range (x, y) as r2) =
   | Some (OverlapRight _) -> Some (Range (a, y))
   | Some (OverlapLeft _) -> Some (Range (x, b))
   | None -> None
+
+let union_list ranges =
+  let rec aux acc = function
+    | [] -> acc
+    | r :: rs ->
+    match acc with
+    | [] -> aux [ r ] rs
+    | r' :: rs' ->
+    match union r r' with
+    | Some r'' -> aux (r'' :: rs') rs
+    | None -> aux (r :: acc) rs
+  in
+  aux [] ranges

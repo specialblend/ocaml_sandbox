@@ -14,7 +14,9 @@ let parse_seeds rows =
   |>| List.concat_map (List.filter_map int_of_string_opt)
   |>| chunk_pairs
   |>| List.sort compare
-  |>| List.map (fun (x, y) -> Seed (Range.make (x, x + y)))
+  |>| List.map (fun (x, y) -> Range.make (x, x + y))
+  |>| Range.union_list
+  |>| List.sort compare
 
 let parse_triple = function
   | [ dst; src; margin ] ->
@@ -34,9 +36,10 @@ let parse_group text =
 let parse_groups = function
   | head :: tail -> begin
       let seeds = parse_seeds head
-      and mappings = List.map (List.map parse_mapping) tail in
-      (seeds, mappings)
+      and table = List.map (List.map parse_mapping) tail in
+      { seeds; table }
     end
   | _ -> failwith "illegal"
 
-let parse_almanac = Str.split _EOL2 >> List.map parse_group >> parse_groups
+let parse_almanac text : almanac =
+  text |>| Str.split _EOL2 |>| List.map parse_group |>| parse_groups
