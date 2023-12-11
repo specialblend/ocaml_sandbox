@@ -25,14 +25,12 @@ let union (Range (a, b) as r1) (Range (x, y) as r2) =
   | None -> None
 
 let union_list ranges =
-  let rec aux acc = function
-    | [] -> acc
-    | r :: rs ->
-    match acc with
-    | [] -> aux [ r ] rs
-    | r' :: rs' ->
-    match union r r' with
-    | Some r'' -> aux (r'' :: rs') rs
-    | None -> aux (r :: acc) rs
+  let rec join = function
+    | r1 :: r2 :: rest -> begin
+        match union r1 r2 with
+        | Some r -> join (r :: rest)
+        | None -> r1 :: join (r2 :: rest)
+      end
+    | rest -> rest
   in
-  aux [] ranges
+  join ranges
