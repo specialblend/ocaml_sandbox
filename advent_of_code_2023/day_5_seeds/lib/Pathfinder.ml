@@ -124,8 +124,10 @@ let compile_known_seeds table =
     match Range.intersect domain range with
     | None -> None
     | Some (Subset _) -> Some [ (range, Some offset) ]
-    | Some (OverlapRight (x', y')) -> Some [ ((x', y'), Some offset) ]
-    | Some (OverlapLeft (x', y')) -> Some [ ((x', y'), Some offset) ]
+    | Some (OverlapRight (x', y')) ->
+        Some [ ((a, x' - 1), None); ((x', y'), Some offset) ]
+    | Some (OverlapLeft (x', y')) ->
+        Some [ ((x', y'), Some offset); ((y' + 1, b), None) ]
     | Some (Superset (x, y)) ->
         let left = (x, a - 1) in
         let right = (b + 1, y) in
