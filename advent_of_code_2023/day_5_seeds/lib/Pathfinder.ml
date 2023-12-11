@@ -5,12 +5,15 @@ module Path = struct
     domain: Range.t;
     offset: int;
   }
-  [@@deriving fields, show { with_path = false }]
+  [@@deriving show { with_path = false }]
+end
 
-  type cursor = {
-    path: t;
+module Cursor = struct
+  type t = {
+    path: Path.t;
     range: Range.t;
   }
+  [@@deriving show { with_path = false }]
 end
 
 let range_of (_, src, margin) = (src, src + margin - 1)
@@ -24,16 +27,16 @@ let row_intersects range row =
   | _ -> false
 
 let use_subset _ cursor row =
-  let Path.{ path; range } = cursor in
+  let Cursor.{ path; range } = cursor in
   let dst, src, _ = row in
   let offset = dst - src in
   let path = { path with offset = path.offset + offset } in
   let range = Range.add_both offset range in
-  let cursor = Path.{ path; range } in
+  let cursor = Cursor.{ path; range } in
   cursor
 
 let use_overlap (x, y) cursor row =
-  let Path.{ path; range } = cursor in
+  let Cursor.{ path; range } = cursor in
   let a, b = range in
   let d_left = x - a in
   let d_right = y - b in
@@ -43,11 +46,11 @@ let use_overlap (x, y) cursor row =
   let offset = dst - src in
   let path = { Path.domain = domain'; offset = path.offset + offset } in
   let range = Range.add_both offset (x, y) in
-  let cursor = Path.{ path; range } in
+  let cursor = Cursor.{ path; range } in
   cursor
 
 let move_cursor fold prev rest row =
-  let Path.{ range; _ } = prev in
+  let Cursor.{ range; _ } = prev in
   let next_range = range_of row in
   let next_cursor =
     let next_move =
@@ -66,7 +69,7 @@ let move_cursor fold prev rest row =
 let fold_table cursor table =
   let rec fold cursor table =
     let scan_rows prev rows rest =
-      let Path.{ range; _ } = prev in
+      let Cursor.{ range; _ } = prev in
       let move_cursor = move_cursor fold prev rest in
       match List.find_opt (row_intersects range) rows with
       | Some row -> move_cursor row
@@ -83,8 +86,8 @@ let compile_header header =
   let domain = (src, src + margin - 1) in
   let offset = dst - src in
   let range = Range.add_both offset domain in
-  let path = { Path.domain; Path.offset } in
-  let cursor = Path.{ path; range } in
+  let path = Path.{ domain; offset } in
+  let cursor = Cursor.{ path; range } in
   cursor
 
 let is_singleton = function
@@ -99,7 +102,7 @@ let compile_paths table =
   let scan_header table header =
     let cursor = compile_header header in
     match fold_table (Some cursor) table with
-    | Some Path.{ path; _ } -> Some path
+    | Some { path; _ } -> Some path
     | None -> None
   in
   match table with
