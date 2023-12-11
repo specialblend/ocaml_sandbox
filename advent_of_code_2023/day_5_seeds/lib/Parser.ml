@@ -13,7 +13,7 @@ let parse_seeds rows =
   |>| List.concat_map (List.filter_map int_of_string_opt)
   |>| chunk_pairs
   |>| List.sort compare
-  |>| List.map Range.make
+  |>| List.map (fun (x, y) -> Range.make (x, x + y))
 
 let parse_triple = function
   | [ dst; src; margin ] ->
