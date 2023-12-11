@@ -90,33 +90,62 @@ let%test "compiled seed table is correct" =
 
 let%expect_test "compile_known_seeds" =
   let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
-  seeds
-  |>| compile_known_seeds table
-  |>| List.map show_known_seed
-  |>| List.iter print_endline;
+  seeds |>| compile_known_seeds table |>| show_known_seeds |>| print_endline;
   [%expect
     {|
-    { seed = (41218238, 421491713); range = (41218238, 462709951);
-      path = { domain = (130988761, 144724434); offset = 1523978333 };
-      intersect = (Superset (41218238, 462709951)) }
-    { seed = (481818804, 233571979); range = (481818804, 715390783);
-      path = { domain = (498356426, 515916487); offset = 573016119 };
-      intersect = (Superset (481818804, 715390783)) }
-    { seed = (944138913, 251104806); range = (944138913, 1195243719);
-      path = { domain = (929849139, 957158779); offset = 3127778329 };
-      intersect = (Overlap (944138913, 957158779)) }
-    { seed = (1255413673, 350530906); range = (1255413673, 1605944579);
-      path = { domain = (1239000361, 1308640991); offset = -487996698 };
-      intersect = (Overlap (1255413673, 1308640991)) }
-    { seed = (2109326496, 538709762); range = (2109326496, 2648036258);
-      path = { domain = (2253415953, 2269053206); offset = -2050966996 };
-      intersect = (Superset (2109326496, 2648036258)) }
-    { seed = (2906248740, 266447632); range = (2906248740, 3172696372);
-      path = { domain = (2940939060, 2946419136); offset = 104748907 };
-      intersect = (Superset (2906248740, 3172696372)) }
-    { seed = (3579244700, 267233350); range = (3579244700, 3846478050);
-      path = { domain = (3832436688, 3847103899); offset = -1963817604 };
-      intersect = (Overlap (3832436688, 3846478050)) } |}]
+    [[((41218238, 130988760), None); ((130988761, 144724434), (Some 1523978333));
+       ((144724435, 462709951), None)];
+      [((41218238, 438168826), None);
+        ((438168827, 446641972), (Some 2377399210));
+        ((446641973, 462709951), None)];
+      [((481818804, 498356425), None);
+        ((498356426, 515916487), (Some 573016119));
+        ((515916488, 715390783), None)];
+      [((481818804, 536917987), None);
+        ((536917988, 544654657), (Some 316619784));
+        ((544654658, 715390783), None)];
+      [((481818804, 650502764), None);
+        ((650502765, 657139062), (Some 2129081357));
+        ((657139063, 715390783), None)];
+      [((944138913, 957158779), (Some 3127778329))];
+      [((944138913, 979257605), None);
+        ((979257606, 990438940), (Some 1318336963));
+        ((990438941, 1195243719), None)];
+      [((944138913, 1098613331), None);
+        ((1098613332, 1114497264), (Some 2634856385));
+        ((1114497265, 1195243719), None)];
+      [((944138913, 1124514126), None);
+        ((1124514127, 1129263946), (Some 1436858815));
+        ((1129263947, 1195243719), None)];
+      [((1255413673, 1308640991), (Some -487996698))];
+      [((1255413673, 1535118372), None);
+        ((1535118373, 1545830629), (Some 415864339));
+        ((1545830630, 1605944579), None)];
+      [((1255413673, 1548974917), None);
+        ((1548974918, 1557270806), (Some -215426509));
+        ((1557270807, 1605944579), None)];
+      [((2109326496, 2253415952), None);
+        ((2253415953, 2269053206), (Some -2050966996));
+        ((2269053207, 2648036258), None)];
+      [((2109326496, 2361908616), None);
+        ((2361908617, 2383690007), (Some -1747071946));
+        ((2383690008, 2648036258), None)];
+      [((2109326496, 2383690008), None);
+        ((2383690009, 2416384373), (Some 959744588));
+        ((2416384374, 2648036258), None)];
+      [((2109326496, 2568591486), None);
+        ((2568591487, 2604369519), (Some -1223292607));
+        ((2604369520, 2648036258), None)];
+      [((2109326496, 2605613670), None);
+        ((2605613671, 2623158994), (Some -2420710039));
+        ((2623158995, 2648036258), None)];
+      [((2906248740, 2940939059), None);
+        ((2940939060, 2946419136), (Some 104748907));
+        ((2946419137, 3172696372), None)];
+      [((2906248740, 3169731719), None);
+        ((3169731720, 3170733408), (Some -2810516698));
+        ((3170733409, 3172696372), None)];
+      [((3832436688, 3846478050), (Some -1963817604))]] |}]
 
 let%expect_test "print lookup" =
   let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
@@ -138,17 +167,23 @@ let%expect_test "print lookup" =
     3579244700 -> 2395376000
     4173137165 -> 251346198 |}]
 
-(* let%test "compile_known_seeds verification" =
-   let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
-   let verify_known_seed (seed, offset) =
-     let x, z = seed in
-     let _y = (x + z) / 2 in
-     let seeds = [ x + 1 ] in
-     List.for_all
-       (fun seed ->
-         let expected = Looker.look_table seed table in
-         let result = seed + offset in
-         expected = result)
-       seeds
-   in
-   seeds |>| compile_known_seeds table |>| List.for_all verify_known_seed *)
+let%test "compile_known_seeds verification" =
+  let seeds, table = Parser.parse_almanac Parser_test.seeds_text in
+  let verify_known_seed (seed, offset) =
+    let x, z = seed in
+    let y = (x + z) / 2 in
+    let seeds = [ x; y; z ] in
+    List.for_all
+      (fun seed ->
+        let expected = Looker.look_table seed table in
+        let result = seed + offset in
+        expected = result)
+      seeds
+  in
+  seeds
+  |>| compile_known_seeds table
+  |>| List.flatten
+  |>| List.filter_map (function
+        | seed, Some offset -> Some (seed, offset)
+        | _ -> None)
+  |>| List.for_all verify_known_seed
