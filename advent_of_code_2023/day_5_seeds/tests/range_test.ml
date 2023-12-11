@@ -1,48 +1,49 @@
 open Seeds
+open Range
 
 let%test "range intersect subset" =
-  let range1 = (1, 10) in
-  let range2 = (3, 5) in
+  let range1 = Range (1, 10) in
+  let range2 = Range (3, 5) in
 
   match Range.intersect range1 range2 with
-  | Some (Subset (3, 5)) -> true
+  | Some (Subset (Range (3, 5))) -> true
   | _ -> false
 
 let%test "range intersect full subset" =
-  let range1 = (1, 10) in
-  let range2 = (1, 10) in
+  let range1 = Range (1, 10) in
+  let range2 = Range (1, 10) in
 
   match Range.intersect range1 range2 with
-  | Some (Subset (1, 10)) -> true
+  | Some (Subset (Range (1, 10))) -> true
   | _ -> false
 
 let%test "range intersect superset" =
-  let range1 = (3, 5) in
-  let range2 = (1, 10) in
+  let range1 = Range (3, 5) in
+  let range2 = Range (1, 10) in
 
   match Range.intersect range1 range2 with
-  | Some (Superset (1, 10)) -> true
+  | Some (Superset (Range (1, 10))) -> true
   | _ -> false
 
 let%test "range intersect overlap right" =
-  let range1 = (1, 10) in
-  let range2 = (4, 12) in
+  let range1 = Range (1, 10) in
+  let range2 = Range (4, 12) in
 
   match Range.intersect range1 range2 with
-  | Some (OverlapRight (4, 10)) -> true
+  | Some (OverlapRight (Range (4, 10))) -> true
   | _ -> false
 
 let%test "range intersect overlap left" =
-  let range1 = (5, 13) in
-  let range2 = (2, 7) in
+  let range1 = Range (5, 13) in
+  let range2 = Range (2, 7) in
 
   match Range.intersect range1 range2 with
-  | Some (OverlapLeft (5, 7)) -> true
+  | Some (OverlapLeft (Range (5, 7))) -> true
   | _ -> false
 
 let%test "range intersect none" =
-  let range1 = (1, 13) in
-  let range2 = (21, 47) in
+  let range1 = Range (1, 13) in
+  let range2 = Range (21, 47) in
 
   match Range.intersect range1 range2 with
   | None -> true

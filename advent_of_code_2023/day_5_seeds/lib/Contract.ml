@@ -1,5 +1,3 @@
-type seed = int * int [@@deriving show { with_path = false }]
-type row = int * int * int [@@deriving show { with_path = false }]
-type map = row list [@@deriving show { with_path = false }]
-type table = map list [@@deriving show { with_path = false }]
-type almanac = seed list * table [@@deriving show { with_path = false }]
+type mapping = Range.t * int [@@deriving show { with_path = false }]
+type table = mapping list [@@deriving show { with_path = false }]
+type almanac = Range.t list * table list [@@deriving show { with_path = false }]
