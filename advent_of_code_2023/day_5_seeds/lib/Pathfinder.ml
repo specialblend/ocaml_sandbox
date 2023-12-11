@@ -108,7 +108,7 @@ let compile_paths table =
       |>| List.filter_map (scan_header table)
       |>| List.filter (fun path -> not (is_singleton path))
       |>| List.map fix_window
-      |>| List.sort (fun a b -> compare a.Path.domain b.Path.domain)
+      |>| List.sort compare
   | _ -> failwith "illegal"
 
 type known_seed = (int * int) * int option [@@deriving show]
@@ -126,16 +126,32 @@ let compile_path seed path =
   | Some (OverlapRight (x', y')) ->
       let left = (a, x' - 1) in
       let right = (x', y') in
-      Some [ (left, None); (right, Some offset) ]
+      Some
+        [
+          (left, None);
+          (right, Some offset);
+          (* ------------------------------- *)
+        ]
   | Some (OverlapLeft (x', y')) ->
       let left = (x', y') in
       let right = (y' + 1, b) in
-      Some [ (left, Some offset); (right, None) ]
+      Some
+        [
+          (left, Some offset);
+          (right, None);
+          (* ------------------------------- *)
+        ]
   | Some (Superset (x, y)) ->
       let left = (x, a - 1) in
       let right = (b + 1, y) in
       let middle = (a, b) in
-      Some [ (left, None); (middle, Some offset); (right, None) ]
+      Some
+        [
+          (left, None);
+          (middle, Some offset);
+          (right, None);
+          (* --------------  *)
+        ]
 
 let compile_known_seeds table seeds =
   let compile seed =
