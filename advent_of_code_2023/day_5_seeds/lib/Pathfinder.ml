@@ -11,29 +11,6 @@ module Path = struct
     path: t;
     range: Range.t;
   }
-
-  let use_overlap (x, y) cursor row =
-    let { path; range } = cursor in
-    let a, b = range in
-    let d_left = x - a in
-    let d_right = y - b in
-    let left, right = path.domain in
-    let domain' = (left + d_left, right + d_right) in
-    let dst, src, _ = row in
-    let offset = dst - src in
-    let path = { domain = domain'; offset = path.offset + offset } in
-    let range = Range.add_both offset (x, y) in
-    let cursor = { path; range } in
-    cursor
-
-  let use_subset _ cursor row =
-    let { path; range } = cursor in
-    let dst, src, _ = row in
-    let offset = dst - src in
-    let path = { path with offset = path.offset + offset } in
-    let range = Range.add_both offset range in
-    let cursor = { path; range } in
-    cursor
 end
 
 let range_of (_, src, margin) = (src, src + margin - 1)
@@ -46,15 +23,38 @@ let row_intersects range row =
   | Some (OverlapLeft (_, _)) -> true
   | _ -> false
 
+let use_subset _ cursor row =
+  let Path.{ path; range } = cursor in
+  let dst, src, _ = row in
+  let offset = dst - src in
+  let path = { path with offset = path.offset + offset } in
+  let range = Range.add_both offset range in
+  let cursor = Path.{ path; range } in
+  cursor
+
+let use_overlap (x, y) cursor row =
+  let Path.{ path; range } = cursor in
+  let a, b = range in
+  let d_left = x - a in
+  let d_right = y - b in
+  let left, right = path.domain in
+  let domain' = (left + d_left, right + d_right) in
+  let dst, src, _ = row in
+  let offset = dst - src in
+  let path = { Path.domain = domain'; offset = path.offset + offset } in
+  let range = Range.add_both offset (x, y) in
+  let cursor = Path.{ path; range } in
+  cursor
+
 let move_cursor fold prev rest row =
   let Path.{ range; _ } = prev in
   let next_range = range_of row in
   let next_cursor =
     let next_move =
       match Range.intersect next_range range with
-      | Some (Subset (x, y)) -> Some (Path.use_subset (x, y))
-      | Some (OverlapLeft (x, y)) -> Some (Path.use_overlap (x, y))
-      | Some (OverlapRight (x, y)) -> Some (Path.use_overlap (x, y))
+      | Some (Subset (x, y)) -> Some (use_subset (x, y))
+      | Some (OverlapLeft (x, y)) -> Some (use_overlap (x, y))
+      | Some (OverlapRight (x, y)) -> Some (use_overlap (x, y))
       | _ -> None
     in
     match next_move with
