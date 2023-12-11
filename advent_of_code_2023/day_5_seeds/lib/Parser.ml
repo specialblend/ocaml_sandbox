@@ -1,5 +1,9 @@
 open Fun
-open Contract
+
+type seed = Range.t [@@deriving show]
+type mapping = Mapping of Range.t * int [@@deriving show]
+type table = mapping list list [@@deriving show]
+type almanac = seed list * table [@@deriving show]
 
 let _NUM = Str.regexp "[0-9]+"
 and _EOL = Str.regexp "\n"
@@ -37,7 +41,7 @@ let parse_groups = function
   | head :: tail -> begin
       let seeds = parse_seeds head
       and table = List.map (List.map parse_mapping) tail in
-      { seeds; table }
+      (seeds, table)
     end
   | _ -> failwith "illegal"
 
