@@ -153,10 +153,31 @@ let compile_path seed path =
           (* --------------  *)
         ]
 
+let merge_unknown_seeds (seeds : known_seeds) =
+  let check_dupe seed seed' =
+    match seed' with
+    | _, Some _ -> true
+    | range', None -> begin
+        let range, _ = seed in
+        match Range.intersect range range' with
+        | Some (Subset _) -> false
+        | _ -> true
+      end
+  in
+  let seeds' = seeds |>| List.flatten |>| List.sort compare in
+  seeds'
+  |>| List.fold_left
+        (fun acc seed ->
+          let res = List.filter (check_dupe seed) acc in
+          seed :: res)
+        []
+
+type compiled_seeds = known_seed list [@@deriving show]
+
 let compile_known_seeds table seeds =
   let compile seed =
     table
     |>| compile_paths
     |>| List.filter_map (fun path -> compile_path seed path)
   in
-  List.concat_map compile seeds
+  List.concat_map compile seeds |>| merge_unknown_seeds
