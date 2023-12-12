@@ -7,7 +7,7 @@ module Mapping = struct
   let offset (_, o) = o
 end
 
-type seed = Range.t [@@deriving show]
+type seed = Mapping.t [@@deriving show]
 type table = Mapping.t list list [@@deriving show]
 type almanac = seed list * table [@@deriving show]
 
@@ -24,8 +24,7 @@ let parse_seeds rows =
   |>| List.concat_map (List.filter_map int_of_string_opt)
   |>| chunk_pairs
   |>| List.sort compare
-  |>| List.map (fun (x, y) -> (x, x + y))
-  |>| Range.union_list
+  |>| List.map (fun (x, y) -> ((x, x + y), 0))
   |>| List.sort compare
 
 let parse_triple = function
