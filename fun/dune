@@ -1,0 +1,5 @@
+(executable
+ (name coffee)
+ (public_name coffee)
+ (modules coffee)
+ (libraries unix))
