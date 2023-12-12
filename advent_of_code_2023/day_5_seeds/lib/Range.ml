@@ -1,3 +1,5 @@
+open Fun
+
 type t = int * int [@@deriving show { with_path = false }]
 
 let map fn (a, b) = (fn a, fn b)
@@ -25,30 +27,55 @@ let union ((a, b) as r1) ((x, y) as r2) =
   | None -> None
 
 let union_all rgs =
-  let rec aux = function
+  let rec union_all = function
     | r1 :: r2 :: rest -> begin
         match union r1 r2 with
-        | Some r -> aux (r :: rest)
-        | None -> r1 :: aux (r2 :: rest)
+        | Some r -> union_all (r :: rest)
+        | None -> r1 :: union_all (r2 :: rest)
       end
     | rest -> rest
   in
-  aux rgs
+  union_all rgs
+
+type diff =
+  | Empty
+  | Unit of t
+  | Pair of t * t
+[@@deriving show]
 
 let diff (a, b) (x, y) =
   match intersect (a, b) (x, y) with
+  | _ when a = x && b = y -> []
+  | Some (Superset _) -> []
+  | Some (Subset (x, y)) when x = a -> [ (y + 1, b) ]
+  | Some (Subset (x, y)) when y = b -> [ (a, x - 1) ]
   | Some (Subset (x, y)) -> [ (a, x - 1); (y + 1, b) ]
-  | Some (Superset (x, y)) -> [ (x, a - 1); (b + 1, y) ]
   | Some (OverlapRight (x, _)) -> [ (a, x - 1) ]
   | Some (OverlapLeft (_, y)) -> [ (y + 1, b) ]
   | None -> [ (a, b) ]
 
-let diff_all rg rgs =
-  let rec aux acc rest =
-    match rest with
-    | [] -> acc
+let diff2 (a, b) (x, y) =
+  match intersect (a, b) (x, y) with
+  | _ when a = x && b = y -> Empty
+  | Some (Superset _) -> Empty
+  | Some (Subset (x, y)) when x = a -> Unit (y + 1, b)
+  | Some (Subset (x, y)) when y = b -> Unit (a, x - 1)
+  | Some (Subset (x, y)) -> Pair ((a, x - 1), (y + 1, b))
+  | Some (OverlapRight (x, _)) -> Unit (a, x - 1)
+  | Some (OverlapLeft (_, y)) -> Unit (y + 1, b)
+  | None -> Unit (a, b)
+
+let diff_all r ranges =
+  let rec diff_all r1 rest =
+    rest
+    |>| union_all
+    |>| List.sort compare
+    |>| function
+    | [] -> r1 :: []
     | r2 :: rest ->
-        let acc' = List.concat_map (diff r2) acc in
-        aux acc' rest
+    match diff2 r1 r2 with
+    | Empty -> []
+    | Unit r3 -> diff_all r3 rest
+    | Pair (r3, r4) -> r3 :: diff_all r4 rest
   in
-  aux [ rg ] rgs
+  diff_all r ranges

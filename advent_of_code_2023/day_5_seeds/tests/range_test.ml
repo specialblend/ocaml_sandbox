@@ -42,3 +42,52 @@ module Union_test = struct
     Range.union_all [ (1, 10); (3, 5); (10, 15); (15, 20); (20, 25); (25, 30) ]
     = [ (1, 30) ]
 end
+
+module Diff_test = struct
+  let%test _ = Range.diff (3, 5) (1, 10) = []
+  let%test _ = Range.diff (1, 10) (1, 10) = []
+  let%test _ = Range.diff (1, 10) (3, 5) = [ (1, 2); (6, 10) ]
+  let%test _ = Range.diff (1, 5) (5, 10) = [ (1, 4) ]
+  let%test _ = Range.diff (5, 10) (1, 5) = [ (6, 10) ]
+  let%test _ = Range.diff (5, 10) (1, 9) = [ (10, 10) ]
+  let%test _ = Range.diff (1, 9) (3, 10) = [ (1, 2) ]
+  let%test _ = Range.diff (2, 10) (1, 9) = [ (10, 10) ]
+
+  (*  *)
+  let%test _ = Range.diff2 (3, 5) (1, 10) = Empty
+  let%test _ = Range.diff2 (1, 10) (1, 10) = Empty
+  let%test _ = Range.diff2 (1, 10) (3, 5) = Pair ((1, 2), (6, 10))
+  let%test _ = Range.diff2 (1, 5) (5, 10) = Unit (1, 4)
+  let%test _ = Range.diff2 (5, 10) (1, 5) = Unit (6, 10)
+  let%test _ = Range.diff2 (5, 10) (1, 9) = Unit (10, 10)
+  let%test _ = Range.diff2 (1, 9) (3, 10) = Unit (1, 2)
+  let%test _ = Range.diff2 (2, 10) (1, 9) = Unit (10, 10)
+
+  (* let%expect_test _ =
+     Range.diff2 (1, 100) (1, 10) |> Range.show_diff |> print_endline;
+     Range.diff2 (11, 100) (90, 100) |> Range.show_diff |> print_endline;
+     [%expect {||}] *)
+
+  (*  *)
+  let%test _ = Range.diff_all (1, 20) [ (5, 7) ] = [ (1, 4); (8, 20) ]
+
+  let%test _ =
+    let ranges = [ (5, 7); (12, 15) ]
+    and expected = [ (1, 4); (8, 11); (16, 20) ] in
+    Range.diff_all (1, 20) ranges = expected
+
+  let%test _ = Range.diff_all (1, 100) [ (1, 10); (90, 100) ] = [ (11, 89) ]
+
+  let%test _ =
+    let ranges = [ (10, 20); (30, 40); (50, 60); (70, 80); (90, 100) ]
+    and expected = [ (1, 9); (21, 29); (41, 49); (61, 69); (81, 89) ] in
+    Range.diff_all (1, 100) ranges = expected
+
+  (*  *)
+  (* let%expect_test _ =
+     Range.diff_all (1, 100)
+       [ (10, 20); (30, 40); (50, 60); (70, 80); (90, 100) ]
+     |> List.map Range.show
+     |> List.iter print_endline;
+     [%expect {||}] *)
+end
