@@ -3,6 +3,8 @@ open Fun
 type t = int * int [@@deriving show { with_path = false }]
 
 let map fn (a, b) = (fn a, fn b)
+let is_subset (a, b) (x, y) = a >= x && b <= y
+let is_superset (a, b) (x, y) = a <= x && b >= y
 
 type intersect =
   | Subset of t
