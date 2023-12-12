@@ -18,13 +18,13 @@ let intersect (a, b) = function
 
 let union ((a, b) as r1) ((x, y) as r2) =
   match intersect r1 r2 with
-  | Some (Subset _) -> Some (x, y)
-  | Some (Superset _) -> Some (a, b)
+  | Some (Subset _) -> Some (a, b)
+  | Some (Superset _) -> Some (x, y)
   | Some (OverlapRight _) -> Some (a, y)
   | Some (OverlapLeft _) -> Some (x, b)
   | None -> None
 
-let union_list rgs =
+let union_all rgs =
   let rec aux = function
     | r1 :: r2 :: rest -> begin
         match union r1 r2 with
@@ -43,7 +43,7 @@ let diff (a, b) (x, y) =
   | Some (OverlapLeft (_, y)) -> [ (y + 1, b) ]
   | None -> [ (a, b) ]
 
-let diff_list (r : t) rgs =
+let diff_all rg rgs =
   let rec aux acc rest =
     match rest with
     | [] -> acc
@@ -51,4 +51,4 @@ let diff_list (r : t) rgs =
         let acc' = List.concat_map (diff r2) acc in
         aux acc' rest
   in
-  aux [ r ] rgs
+  aux [ rg ] rgs
