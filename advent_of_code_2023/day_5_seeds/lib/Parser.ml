@@ -1,8 +1,14 @@
 open Fun
 
+module Mapping = struct
+  type t = Range.t * int [@@deriving show]
+
+  let range (r, _) = r
+  let offset (_, o) = o
+end
+
 type seed = Range.t [@@deriving show]
-type mapping = Mapping of Range.t * int [@@deriving show]
-type table = mapping list list [@@deriving show]
+type table = Mapping.t list list [@@deriving show]
 type almanac = seed list * table [@@deriving show]
 
 let _NUM = Str.regexp "[0-9]+"
@@ -18,15 +24,15 @@ let parse_seeds rows =
   |>| List.concat_map (List.filter_map int_of_string_opt)
   |>| chunk_pairs
   |>| List.sort compare
-  |>| List.map (fun (x, y) -> Range.make (x, x + y))
+  |>| List.map (fun (x, y) -> (x, x + y))
   |>| Range.union_list
   |>| List.sort compare
 
 let parse_triple = function
   | [ dst; src; margin ] ->
-      let range = Range.make (src, src + margin)
+      let range = (src, src + margin)
       and offset = dst - src in
-      Mapping (range, offset)
+      (range, offset)
   | _ -> failwith "illegal tuple"
 
 let parse_mapping = List.filter_map int_of_string_opt >> parse_triple
