@@ -43,11 +43,10 @@ let parse_group text =
   |>| List.filter (fun x -> List.length x > 0)
 
 let parse_groups = function
-  | head :: tail -> begin
+  | head :: tail ->
       let seeds = parse_seeds head
       and table = List.map (List.map parse_mapping) tail in
       (seeds, table)
-    end
   | _ -> failwith "illegal"
 
 let parse_almanac text : almanac =
