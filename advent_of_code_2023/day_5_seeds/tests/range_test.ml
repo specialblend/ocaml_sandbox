@@ -1,12 +1,12 @@
 open Seeds
 
 module Intersect_test = struct
-  let%test _ = Range.intersect2 (1, 10) (3, 5) = Some (Subset (3, 5))
-  let%test _ = Range.intersect2 (1, 10) (1, 10) = Some (Subset (1, 10))
-  let%test _ = Range.intersect2 (3, 5) (1, 10) = Some (Superset (1, 10))
-  let%test _ = Range.intersect2 (1, 10) (4, 12) = Some (OverlapRight (4, 10))
-  let%test _ = Range.intersect2 (5, 13) (2, 7) = Some (OverlapLeft (5, 7))
-  let%test _ = Range.intersect2 (1, 13) (21, 47) = None
+  let%test _ = Range.intersect (1, 10) (3, 5) = Some (3, 5)
+  let%test _ = Range.intersect (1, 10) (1, 10) = Some (1, 10)
+  let%test _ = Range.intersect (3, 5) (1, 10) = Some (3, 5)
+  let%test _ = Range.intersect (1, 10) (4, 12) = Some (4, 10)
+  let%test _ = Range.intersect (5, 13) (2, 7) = Some (5, 7)
+  let%test _ = Range.intersect (1, 13) (21, 47) = None
 end
 
 module Union_test = struct
@@ -53,20 +53,6 @@ module Diff_test = struct
   let%test _ = Range.diff (1, 9) (3, 10) = [ (1, 2) ]
   let%test _ = Range.diff (2, 10) (1, 9) = [ (10, 10) ]
   let%test _ = Range.diff (50, 100) (25, 75) = [ (76, 100) ]
-
-  (* let%test _ = Range.diff2 (3, 5) (1, 10) = Empty
-     let%test _ = Range.diff2 (1, 10) (1, 10) = Empty
-     let%test _ = Range.diff2 (1, 10) (3, 5) = Pair ((1, 2), (6, 10))
-     let%test _ = Range.diff2 (1, 5) (5, 10) = Unit (1, 4)
-     let%test _ = Range.diff2 (5, 10) (1, 5) = Unit (6, 10)
-     let%test _ = Range.diff2 (5, 10) (1, 9) = Unit (10, 10)
-     let%test _ = Range.diff2 (1, 9) (3, 10) = Unit (1, 2)
-     let%test _ = Range.diff2 (2, 10) (1, 9) = Unit (10, 10) *)
-
-  (* let%expect_test _ =
-     Range.diff2 (1, 100) (1, 10) |> Range.show_diff |> print_endline;
-     Range.diff2 (11, 100) (90, 100) |> Range.show_diff |> print_endline;
-     [%expect {||}] *)
 
   (*  *)
   let%test _ = Range.diff_all (1, 20) [ (5, 7) ] = [ (1, 4); (8, 20) ]

@@ -18,13 +18,6 @@ let intersect (a, b) = function
   | x, y when x <= a && a <= y -> Some (a, y)
   | _ -> None
 
-let intersect2 (a, b) = function
-  | x, y when a <= x && y <= b -> Some (Subset (x, y))
-  | x, y when x <= a && b <= y -> Some (Superset (x, y))
-  | x, y when x <= b && b <= y -> Some (OverlapRight (x, b))
-  | x, y when x <= a && a <= y -> Some (OverlapLeft (a, y))
-  | _ -> None
-
 let union ((a, b) as r1) ((x, y) as r2) =
   match intersect r1 r2 with
   | Some _ -> Some (min a x, max b y)
