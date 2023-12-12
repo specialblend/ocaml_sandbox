@@ -1,13 +1,13 @@
 type t = int * int [@@deriving show { with_path = false }]
 
+let map fn (a, b) = (fn a, fn b)
+
 type intersect =
   | Subset of t
   | Superset of t
   | OverlapRight of t
   | OverlapLeft of t
 [@@deriving show { with_path = false }]
-
-let map fn (a, b) = (fn a, fn b)
 
 let intersect (a, b) = function
   | x, y when a <= x && y <= b -> Some (Subset (x, y))
@@ -34,3 +34,11 @@ let union_list s =
     | rest -> rest
   in
   join s
+
+let diff (a, b) (x, y) =
+  match intersect (a, b) (x, y) with
+  | Some (Subset (x, y)) -> [ (a, x - 1); (y + 1, b) ]
+  | Some (Superset (x, y)) -> [ (x, a - 1); (b + 1, y) ]
+  | Some (OverlapRight (x, _)) -> [ (a, x - 1) ]
+  | Some (OverlapLeft (_, y)) -> [ (y + 1, b) ]
+  | None -> [ (a, b) ]
