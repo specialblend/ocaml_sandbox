@@ -1,50 +1,14 @@
 open Seeds
-open Range
 
-let%test "range intersect subset" =
-  let range1 = (1, 10) in
-  let range2 = (3, 5) in
+module Intersect_tests = struct
+  let%test _ = Range.intersect (1, 10) (3, 5) = Some (Subset (3, 5))
+  let%test _ = Range.intersect (1, 10) (1, 10) = Some (Subset (1, 10))
+  let%test _ = Range.intersect (3, 5) (1, 10) = Some (Superset (1, 10))
+  let%test _ = Range.intersect (1, 10) (4, 12) = Some (OverlapRight (4, 10))
+  let%test _ = Range.intersect (5, 13) (2, 7) = Some (OverlapLeft (5, 7))
+  let%test _ = Range.intersect (1, 13) (21, 47) = None
+end
 
-  match Range.intersect range1 range2 with
-  | Some (Subset (3, 5)) -> true
-  | _ -> false
-
-let%test "range intersect full subset" =
-  let range1 = (1, 10) in
-  let range2 = (1, 10) in
-
-  match Range.intersect range1 range2 with
-  | Some (Subset (1, 10)) -> true
-  | _ -> false
-
-let%test "range intersect superset" =
-  let range1 = (3, 5) in
-  let range2 = (1, 10) in
-
-  match Range.intersect range1 range2 with
-  | Some (Superset (1, 10)) -> true
-  | _ -> false
-
-let%test "range intersect overlap right" =
-  let range1 = (1, 10) in
-  let range2 = (4, 12) in
-
-  match Range.intersect range1 range2 with
-  | Some (OverlapRight (4, 10)) -> true
-  | _ -> false
-
-let%test "range intersect overlap left" =
-  let range1 = (5, 13) in
-  let range2 = (2, 7) in
-
-  match Range.intersect range1 range2 with
-  | Some (OverlapLeft (5, 7)) -> true
-  | _ -> false
-
-let%test "range intersect none" =
-  let range1 = (1, 13) in
-  let range2 = (21, 47) in
-
-  match Range.intersect range1 range2 with
-  | None -> true
-  | _ -> false
+module Union_tests = struct
+  (* let%test _ = Range.union (1, 10) (3, 5) = Some (1, 10) *)
+end
