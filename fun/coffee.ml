@@ -1,3 +1,8 @@
+open Unix
+
+let fill _ = Some "☕"
+let drink _ = None
+
 let rec handle cup =
   let cup =
     match cup with
