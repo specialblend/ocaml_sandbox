@@ -1,6 +1,6 @@
 open Unix
 
-let fill _ = Some "☕"
+let fill x = Some x
 let drink _ = None
 
 let rec handle cup =
