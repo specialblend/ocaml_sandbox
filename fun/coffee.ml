@@ -4,10 +4,10 @@ let fill x = Some x
 let drink _ = None
 
 let rec handle cup =
-  let cup =
+  let c =
     match cup with
     | Some coffee -> drink coffee
     | None -> fill "☕"
   in
-  handle cup;
+  handle c;
   sleep 1
